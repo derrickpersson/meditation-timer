@@ -1,22 +1,54 @@
 import React from "react";
-import { Text, Button } from "react-native-ui-kitten";
-import Sound from "react-native-sound";
+import { compose, withHandlers, toClass } from "recompose";
+import { Audio } from "expo-av";
+import { Text, Button, View } from "react-native";
 
-Sound.setCategory('Playback');
+export interface Props {
+    playThree: () => void;
+    navigation: any;
+}
 
-const MeditationScreen = () => {
-    const threeMin = new Sound("./media/3-minute-meditation.mp3", Sound.MAIN_BUNDLE);
+class MeditationScreen extends React.Component<Props, {}> {
+    static navigationOptions = {
+        title: "Get some peace"
+    };
+
+    public render() {
+
+    // const {
+    //     playThree,
+    // } = this.props;
+
     return (
-        <>
-            <Text>Focus on your breath:</Text>
-            <Button
-                onPress={() => {
-                    threeMin.play();
-                }}
-            >
-                3 minute meditation
-            </Button>
-        </>
-)};
+            <View style={{ flex: 1 }}>
+                <Text>Focus on your breath:</Text>
+                <Button
+                    title="Meditate"
+                    onPress={() => console.log("Clicked Three!")}
+                />
+                <Button
+                    title="Go back"
+                    onPress={() => {
+                        console.log("Clicked!");
+                        this.props.navigation.goBack();
+                    }}
+                />
+            </View>
+    )}
+};
 
+// export default compose(
+//     withHandlers({
+//         playThree: () => async () => {
+//             const soundObject = new Audio.Sound();
+//             try {
+//                 await soundObject.loadAsync(require('./media/3-minute-meditation.mp3'));
+//                 await soundObject.playAsync();
+//             // Your sound is playing!
+//             } catch (error) {
+//             // An error occurred!
+//             }
+//         }
+//     }),
+// )(MeditationScreen);
 export default MeditationScreen;

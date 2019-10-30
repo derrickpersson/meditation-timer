@@ -1,18 +1,33 @@
 import React from 'react';
-import { Layout, Text, Button } from "react-native-ui-kitten";
+import { View, Text, Button } from 'react-native';
 
-const ApplicationContent = ({
-    navigation
-}) => (
-    <Layout style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+export interface Props {
+  navigation: any;
+}
+
+class HomeScreen extends React.Component<Props, {}> {
+  static navigationOptions = {
+    title: 'Home',
+  };
+
+  public render() {
+  
+    return (
+    <View style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
       <Text>Today is your 14,022 day on this beautiful planet.</Text>
       <Text>Make the most of it!</Text>
-      <Button
-        onPress={() => {
-            navigation.navigate('Meditation');
-        }}
-      >Meditate</Button>
-    </Layout>
-); 
+      <View style={{ width: '90%' }}>
+        <Button
+          title="Meditate"
+          
+          onPress={() => {
+              console.log("Navigation: ", this.props.navigation);
+              this.props.navigation.push('Meditation');
+          }}
+        />
+      </View>
+    </View>)
+  }
+}
 
-export default ApplicationContent;
+export default HomeScreen;
