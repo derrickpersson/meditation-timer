@@ -1,5 +1,5 @@
 import React from 'react';
-import { SvgCss } from 'react-native-svg';
+import { SvgXml } from 'react-native-svg';
 
 const xml = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 125" enable-background="new 0 0 100 100" xml:space="preserve">
@@ -12,7 +12,7 @@ const xml = `
 </svg>
 `
 
-const UpArrow = () => <SvgCss xml={xml} width="100%" height="100%" />
+const UpArrow = (props) => <SvgXml xml={xml} width="100%" height="100%" {...props}/>
 
 
 export default UpArrow;
