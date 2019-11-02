@@ -20,10 +20,7 @@ class HomeScreen extends React.Component<Props, {}> {
         <Button
           title="Meditate"
           
-          onPress={() => {
-              console.log("Navigation: ", this.props.navigation);
-              this.props.navigation.push('Meditation');
-          }}
+          onPress={() => this.props.navigation.push('Meditation')}
         />
       </View>
     </View>)
