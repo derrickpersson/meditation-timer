@@ -1,16 +1,19 @@
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import { HomeScreen, MeditationScreen } from "./screens";
+import { HomeScreen, MeditationSelectionScreen, MeditationScreen } from "./screens";
 
 const MainNavigator = createStackNavigator(
   {
     Home: {
       screen: HomeScreen
     },
-    Meditation: { 
-      screen: MeditationScreen 
+    MeditationSelection: { 
+      screen: MeditationSelectionScreen 
     },
+    Meditation: {
+      screen: MeditationScreen
+    }
   },
   {
     initialRouteName: 'Home',
