@@ -1,13 +1,17 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Slider } from "react-native";
 import { Audio } from "expo-av";
 
 class MeditationScreen extends React.Component<any, any> {
     private playbackInstance: any;
+    private isSeeking: boolean;
+    private shouldPlayAtEndOfSeek: boolean;
 
     constructor(props) {
         super(props);
         this.playbackInstance = null;
+        this.isSeeking = false;
+        this.shouldPlayAtEndOfSeek = false;
         this.state = {
             playbackInstancePosition: null,
             playbackInstanceDuration: null,
@@ -27,7 +31,13 @@ class MeditationScreen extends React.Component<any, any> {
     public render() {
         return (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "space-around" }}>
-                <Text>This is the meditation screen.</Text>
+                <Slider 
+                    style={styles.playbackSlider}
+                    value={this.getSeekSliderPosition()}
+                    onValueChange={this.onSeekSliderValueChange}
+                    onSlidingComplete={this.onSeekSliderSlidingComplete}
+                    disabled={this.state.isLoading}
+                />
                 <Text>{this.getMMSSFromMillis(this.state.playbackInstancePosition)}</Text>
                 <TouchableOpacity
                     onPress={this.onPlayPausePressed}
@@ -97,6 +107,9 @@ class MeditationScreen extends React.Component<any, any> {
                 muted: status.isMuted,
                 volume: status.volume,
             });
+            if (status.didJustFinish) {
+                this.completeMeditation();
+            }
         } else {
             if (status.error) {
                 console.log(`FATAL PLAYER ERROR: ${status.error}`);
@@ -143,6 +156,53 @@ class MeditationScreen extends React.Component<any, any> {
         };
         return padWithZero(minutes) + ":" + padWithZero(seconds);
     }
+
+    private getSeekSliderPosition() {
+        if (
+          this.playbackInstance != null &&
+          this.state.playbackInstancePosition != null &&
+          this.state.playbackInstanceDuration != null
+        ) {
+          return (
+            this.state.playbackInstancePosition /
+            this.state.playbackInstanceDuration
+          );
+        }
+        return 0;
+    }
+
+    private onSeekSliderValueChange = value => {
+        if (this.playbackInstance != null && !this.isSeeking) {
+          this.isSeeking = true;
+          this.shouldPlayAtEndOfSeek = this.state.shouldPlay;
+          this.playbackInstance.pauseAsync();
+        }
+    };
+
+    private onSeekSliderSlidingComplete = async value => {
+        if (this.playbackInstance != null) {
+          this.isSeeking = false;
+          const seekPosition = value * this.state.playbackInstanceDuration;
+          if (this.shouldPlayAtEndOfSeek) {
+            this.playbackInstance.playFromPositionAsync(seekPosition);
+          } else {
+            this.playbackInstance.setPositionAsync(seekPosition);
+          }
+        }
+    };
+
+    private completeMeditation = () => {
+        this.unloadPlaybackInstance();
+        this.props.navigation.navigate('MeditationSuccess', {
+            duration: this.props.navigation.state.params.duration,
+        });
+    }
 }
+
+const styles = StyleSheet.create({
+    playbackSlider:   {
+        alignSelf: "stretch"
+    }
+});
 
 export default MeditationScreen;
