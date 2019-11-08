@@ -33,12 +33,12 @@ export class MeditationAnalysisService {
                 return result;
             }
 
-            if(moment(session.createdDate).isSame(moment(result.lastSession.createdDate), 'day')){
+            if(result.lastSession && result.lastSession.createdDate && moment(session.createdDate).isSame(moment(result.lastSession.createdDate), 'day')){
                 result.lastSession = session;
                 return result;
             }
 
-            if(moment(session.createdDate).isSameOrAfter(moment(result.lastSession.createdDate).subtract(1, 'day'), 'day')){
+            if(result.lastSession && result.lastSession.createdDate && moment(session.createdDate).isSameOrAfter(moment(result.lastSession.createdDate).subtract(1, 'day'), 'day')){
                 result.total++;
                 result.lastSession = session;
                 return result;

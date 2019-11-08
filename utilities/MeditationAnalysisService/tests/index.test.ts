@@ -56,7 +56,18 @@ describe("meditationAnalysisService", () => {
     });
 
     it("should return 0 if no streaks within today and yesterday", () => {
-        const additionalMockMeditationSessions = [];
+        const additionalMockMeditationSessions = [
+            {
+                id: "someId",
+                createdDate: moment('2019-11-03').toDate(),
+                duration: 10,
+            },
+            {
+                id: "someId",
+                createdDate: moment('2019-11-04').toDate(),
+                duration: 10,
+            },
+        ];
         const streak = meditationAnalysisService.getDayStreakCount(additionalMockMeditationSessions);
         expect(streak).toEqual(0);
     });
@@ -65,6 +76,16 @@ describe("meditationAnalysisService", () => {
         const additionalMockMeditationSessions = [{
             id: "someId",
             createdDate: moment('2019-11-06').toDate(),
+            duration: 15,
+        }];
+        const streak = meditationAnalysisService.getDayStreakCount(additionalMockMeditationSessions);
+        expect(streak).toEqual(1);
+    });
+
+    it("should return 1 if there is one session yesterday", () => {
+        const additionalMockMeditationSessions = [{
+            id: "someId",
+            createdDate: moment('2019-11-05').toDate(),
             duration: 15,
         }];
         const streak = meditationAnalysisService.getDayStreakCount(additionalMockMeditationSessions);
