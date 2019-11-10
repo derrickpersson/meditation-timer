@@ -4,6 +4,7 @@ import { OpenQuotationMark, CloseQuotationMark, MeditationHighlightsDivider } fr
 import { Button } from '../../components/Button';
 import { asyncStorageMeditationSessionRepository, MeditationRecords } from '../../utilities/MeditationSessionRepository';
 import { meditationAnalysisService } from '../../utilities/MeditationAnalysisService';
+import { Quote, quotationService } from '../../utilities/QuotationService';
 
 export interface Props {
   navigation: any;
@@ -13,6 +14,7 @@ export interface State {
   weeklyMinutes: number;
   dayStreak: number;
   totalMinutes: number;
+  quote: Quote;
 }
 
 class HomeScreen extends React.Component<Props, State> {
@@ -26,6 +28,7 @@ class HomeScreen extends React.Component<Props, State> {
       weeklyMinutes: 0,
       dayStreak: 0,
       totalMinutes: 0,
+      quote: { author: "", text: "" },
     }
   }
 
@@ -37,6 +40,7 @@ class HomeScreen extends React.Component<Props, State> {
         totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
         weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
         dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
+        quote: quotationService.getQuote(),
     });
   }
 
@@ -70,17 +74,22 @@ class HomeScreen extends React.Component<Props, State> {
             <OpenQuotationMark />
           </View>
         </View>
-        <Text style={styles.headingText}>The biggest gap is between knowing and doing</Text>
+        <Text style={styles.headingText}>{this.state.quote.text}</Text>
         <View style={[styles.quotationMarkContainer, styles.closeQuotation]}>
           <View style={styles.quotationMark}>
             <CloseQuotationMark />
           </View>
         </View>
+        <View style={styles.authorTextContainer}>
+          <Text style={styles.authorText}>- {this.state.quote.author}</Text>
+        </View>
       </View>
-        <Button
-          content="Meditate"
-          onPress={() => this.props.navigation.push('MeditationSelection')}
-        />
+        <View style={styles.footerContainer}>
+          <Button
+            content="Meditate"
+            onPress={() => this.props.navigation.push('MeditationSelection')}
+          />
+        </View>
     </View>)
   }
 }
@@ -115,7 +124,7 @@ const styles = StyleSheet.create({
   },
   subheadingText: {
     textAlign: "center",
-    fontSize: 10,
+    fontSize: 12,
   },
   dividers: {
     flex: 0.5,
@@ -140,13 +149,34 @@ const styles = StyleSheet.create({
   openQuotation: {
     alignItems: "flex-start",
     width: "100%",
-    padding: 50,
+    paddingBottom: 50,
+    paddingHorizontal: 50,
   },
   closeQuotation: {
     flex: 0.1,
     alignItems: "flex-end",
     width: "100%",
-    padding: 50,
+    paddingHorizontal: 50,
+    paddingTop: 50,
+  },
+  authorTextContainer: {
+    flex: 0.5,
+    width: "100%",
+    alignItems: "flex-end",
+    paddingHorizontal: 25,
+    paddingTop: 50,
+  },
+  authorText: {
+    color: "#A6A3A3",
+    fontStyle: "italic",
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+  footerContainer: {
+    position: "absolute",
+    bottom: 20,
+    width: "100%",
+    alignItems: "center",
   }
 })
 

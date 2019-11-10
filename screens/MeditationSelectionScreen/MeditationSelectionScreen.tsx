@@ -1,14 +1,12 @@
 import React from "react";
-import { Text, Button, View, TouchableOpacity, StyleSheet } from "react-native";
-import { DownArrow } from "../../components/SvgIcons";
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { DownArrow, UpArrow, Ex } from "../../components/SvgIcons";
+import { Button } from "../../components/Button";
+import { NavigationInjectedProps } from "react-navigation";
 
-export interface Props {
-    navigation: any;
-}
-
-class MeditationScreen extends React.Component<Props, any> {
+class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     static navigationOptions = {
-        title: "Get some peace"
+        header: null,
     };
 
     private durationOptions = [3, 5, 10, 15, 20, 30];
@@ -17,15 +15,36 @@ class MeditationScreen extends React.Component<Props, any> {
         super(props);
         this.state = {
             selectedDuration: 0,
+            instructionText: "",
         };
+    }
+
+    public componentDidMount(){
+        this.setState({
+            ...this.state,
+            instructionText: this.getInstructionText(),
+        });
     }
 
     public render() {
     const duration = this.durationOptions[this.state.selectedDuration];
 
     return (
-            <View style={{ flex: 1 }}>
-                <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+            <View style={styles.screenContainer}>
+                <View style={styles.backNavigationContainer}>
+                    <TouchableOpacity
+                        style={styles.backNavigation}
+                        onPress={() => this.props.navigation.goBack()}
+                    >
+                        <Ex 
+                            containerStyle={styles.backNavigationIcon}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.instructionsContainer}>
+                    <Text style={styles.instructionsText}>{this.state.instructionText}</Text>
+                </View>
+                <View style={styles.selectionContainer}>
                     <TouchableOpacity
                         style={styles.upArrowContainer}
                         onPress={() => {
@@ -34,10 +53,18 @@ class MeditationScreen extends React.Component<Props, any> {
                             });
                         }}
                     >
-                        <DownArrow style={styles.upArrow}/>
+                        <UpArrow />
                     </TouchableOpacity>
-                    <View>
-                        <Text style={styles.durationDisplay}>{duration} Minutes</Text>
+                    <View style={styles.durationDisplayContainer}>
+                        <View style={{flex: 1}}>
+
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.durationDisplay}>{duration}</Text>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.durationUnitText}>minutes</Text>
+                        </View>
                     </View>
                     <TouchableOpacity
                         style={styles.downArrow}
@@ -47,37 +74,104 @@ class MeditationScreen extends React.Component<Props, any> {
                             });
                         }}
                     >
-                        <DownArrow style={{ flex: 1 }}/>
+                        <DownArrow />
                     </TouchableOpacity>
                 </View>
-                <Button
-                    title="Meditate"
-                    onPress={() => this.props.navigation.navigate('Meditation', { duration })}
-                />
+                <View style={styles.footerSpacer}></View>
+                <View style={styles.footerContainer}>
+                    <Button
+                        content="Set Meditation"
+                        onPress={() => this.props.navigation.navigate('Meditation', { duration })}
+                    />
+                </View>
             </View>
     )}
+
+    private getInstructionText() {
+        const instructionTexts = [
+            "Take a minute for yourself",
+            "Be present.",
+            "Your to do’s can wait",
+            "Just focus on your breathe",
+            "You deserve this",
+        ];
+
+        const randomIndex = (Math.floor(Math.random() * 100)) % instructionTexts.length;
+        return instructionTexts[randomIndex];
+    }
 };
 
 const styles = StyleSheet.create({
+    screenContainer: {
+        flex: 1,
+        justifyContent: 'space-around', 
+        alignItems: 'center',
+    },
+    backNavigationContainer: {
+        flex: 0.5,
+        width: "100%",
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 50,
+        paddingBottom: 50,
+        paddingHorizontal: 25,
+    },
+    backNavigation: {
+        flex: 0.5,
+        width: "100%",
+        alignItems: 'flex-start',
+    },
+    backNavigationIcon: {
+        flex: 0.5,
+    },
+    instructionsContainer: {
+        flex: 0.5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    instructionsText: {
+        fontSize: 25,
+        fontStyle: "italic",
+    },
+    selectionContainer: {
+        flex: 4,
+        justifyContent: "flex-start",
+        width: "100%",
+    },
     upArrowContainer: {
-        height: "50%", 
-        width: "50%", 
+        flex: 0.5,
         alignItems: "center", 
         justifyContent: "center", 
     },
-    upArrow: { 
-        transform: [{ rotate: '180deg' }],
-    },
     downArrow: { 
-        height: "50%", 
-        width: "50%", 
+        flex: 0.5,
         alignItems: "center", 
         justifyContent: "center" 
     },
-    durationDisplay: {
-        fontSize: 30,
+    durationDisplayContainer: {
+        flex: 0.25,
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "center",
+        width: "100%",
     },
-
+    durationDisplay: {
+        textAlign: "center",
+        fontSize: 45,
+    },
+    durationUnitText: {
+        fontSize: 20,
+        paddingBottom: 5,
+    },
+    footerSpacer: {
+        flex: 1,
+    },
+    footerContainer: {
+        position: "absolute",
+        bottom: 20,
+        width: "100%",
+        alignItems: "center",
+    },
 });
 
 
