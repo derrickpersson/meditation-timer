@@ -3,15 +3,11 @@ import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { DownArrow, UpArrow } from "../../components/SvgIcons";
 import { NavigationInjectedProps } from "react-navigation";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
-import { Header } from "../../components/Header";
+import { BackNavigation } from "../../components/BackNavigation";
 
 class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     static navigationOptions = ( { navigation }) => ({
-        headerLeft: () => <Header navigation={navigation} />,
-        headerStyle: {
-            shadowColor: 'transparent',
-            elevation: 0,
-        },
+        headerLeft: () => <BackNavigation navigation={navigation} />,
     });
 
     private durationOptions = [3, 5, 10, 15, 20, 30];

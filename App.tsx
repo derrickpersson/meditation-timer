@@ -20,6 +20,12 @@ const MainNavigator = createStackNavigator(
   },
   {
     initialRouteName: 'Home',
+    defaultNavigationOptions: {
+      headerStyle: {
+        shadowColor: 'transparent',
+        elevation: 0,
+      },
+    },
   }
 );
 

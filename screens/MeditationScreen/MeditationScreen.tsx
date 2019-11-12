@@ -1,14 +1,32 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Slider } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
-import { Ex } from "../../components";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
+import { BackNavigation } from "../../components/BackNavigation";
+import { NavigationInjectedProps } from "react-navigation";
 
-class MeditationScreen extends React.Component<any, any> {
+export interface State {
+    playbackInstancePosition: number | null;
+    playbackInstanceDuration: number | null;
+    shouldPlay: boolean;
+    isPlaying: boolean;
+    isBuffering: boolean;
+    isLoading: boolean;
+    volume: number;
+    muted: boolean;
+}
+
+class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     private playbackInstance: any;
-    static navigationOptions = {
-        header: null,
-    };
+    static navigationOptions = ( { navigation }) => ({
+        headerLeft: () => <BackNavigation navigation={navigation} hideBackButton={navigation.getParam('isPlaying')} />,
+        title: `${navigation.getParam('duration')} minute meditation`,
+        headerTitleStyle: {
+          fontWeight: '100',
+          paddingTop: 25,
+          paddingHorizontal: 25,
+        },
+    });
 
     constructor(props) {
         super(props);
@@ -32,20 +50,10 @@ class MeditationScreen extends React.Component<any, any> {
     public render() {
         return (
             <View style={styles.screenContainer}>
-                <View style={styles.backNavigationContainer}>
-                    <TouchableOpacity
-                        style={styles.backNavigation}
-                        onPress={() => this.props.navigation.goBack()}
-                    >
-                        <Ex 
-                            containerStyle={styles.backNavigationIcon}
-                        />
-                    </TouchableOpacity>
-                    <View>
-                        <Text>{this.props.navigation.state.params.duration} minute meditation</Text>
-                    </View>
+                <View style={styles.timerDisplayContainer}>
+                    <Text style={[styles.timerDisplay, !this.state.isPlaying ? styles.pausedTimerDisplay: {}]}>{this.getMMSSFromMillis(this.state.playbackInstancePosition)}</Text>
                 </View>
-                <Text style={styles.timerDisplay}>{this.getMMSSFromMillis(this.state.playbackInstancePosition)}</Text>
+                <View style={styles.footerSpacer}></View>
                 <FooterButton
                     onPress={this.onPlayPausePressed}
                     content={this.state.isPlaying ? "Pause" : "Play"}
@@ -147,8 +155,10 @@ class MeditationScreen extends React.Component<any, any> {
         if (this.playbackInstance != null) {
             if (this.state.isPlaying) {
                 this.playbackInstance.pauseAsync();
+                this.props.navigation.setParams({ isPlaying: false });
             } else {
                 this.playbackInstance.playAsync();
+                this.props.navigation.setParams({ isPlaying: true });
             }
         }
     };
@@ -179,30 +189,23 @@ class MeditationScreen extends React.Component<any, any> {
 const styles = StyleSheet.create({
     screenContainer: {
         flex: 1,
-        justifyContent: 'flex-start', 
+        justifyContent: 'center', 
         alignItems: 'center',
     },
-    backNavigationContainer: {
-        flex: 1,
-        width: "100%",
-        flexDirection: "row",
+    timerDisplayContainer: {
+        flex: 3,
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        paddingHorizontal: 25,
-    },
-    backNavigation: {
-        flex: 1,
-        width: "100%",
-        alignItems: 'flex-start',
-    },
-    backNavigationIcon: {
-        flex: 0.5,
     },
     timerDisplay: {
-        flex: 3,
-        fontSize: 50,
-        justifyContent: "center",
-    }
+        fontSize: 65,
+    },
+    pausedTimerDisplay: {
+        opacity: 0.2,
+    },
+    footerSpacer: {
+        flex: 1,
+    },
 });
 
 export default MeditationScreen;

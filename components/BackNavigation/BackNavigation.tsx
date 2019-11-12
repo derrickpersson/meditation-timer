@@ -2,20 +2,25 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ex } from "../SvgIcons";
+import { NavigationInjectedProps } from "react-navigation";
 
-export class Header extends React.Component<any, any> {
+export interface Props {
+    hideBackButton?: boolean;
+}
+
+export class BackNavigation extends React.Component<Props & NavigationInjectedProps, any> {
 
     public render() {
     return (
         <View style={styles.backNavigationContainer}>
-            <TouchableOpacity
+            {!this.props.hideBackButton && <TouchableOpacity
                 style={styles.backNavigation}
                 onPress={() => this.props.navigation.goBack()}
             >
                 <Ex
                     containerStyle={styles.backNavigationIcon}
                 />
-            </TouchableOpacity>
+            </TouchableOpacity>}
         </View>
         )
     }
@@ -41,4 +46,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Header;
+export default BackNavigation;
