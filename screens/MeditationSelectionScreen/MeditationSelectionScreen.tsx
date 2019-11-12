@@ -1,13 +1,18 @@
 import React from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import { DownArrow, UpArrow, Ex } from "../../components/SvgIcons";
-import { Button } from "../../components/Button";
+import { DownArrow, UpArrow } from "../../components/SvgIcons";
 import { NavigationInjectedProps } from "react-navigation";
+import { FooterButton } from "../../components/FooterButton/FooterButton";
+import { Header } from "../../components/Header";
 
 class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
-    static navigationOptions = {
-        header: null,
-    };
+    static navigationOptions = ( { navigation }) => ({
+        headerLeft: () => <Header navigation={navigation} />,
+        headerStyle: {
+            shadowColor: 'transparent',
+            elevation: 0,
+        },
+    });
 
     private durationOptions = [3, 5, 10, 15, 20, 30];
 
@@ -31,16 +36,6 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
 
     return (
             <View style={styles.screenContainer}>
-                <View style={styles.backNavigationContainer}>
-                    <TouchableOpacity
-                        style={styles.backNavigation}
-                        onPress={() => this.props.navigation.goBack()}
-                    >
-                        <Ex 
-                            containerStyle={styles.backNavigationIcon}
-                        />
-                    </TouchableOpacity>
-                </View>
                 <View style={styles.instructionsContainer}>
                     <Text style={styles.instructionsText}>{this.state.instructionText}</Text>
                 </View>
@@ -78,12 +73,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.footerSpacer}></View>
-                <View style={styles.footerContainer}>
-                    <Button
+                    <FooterButton
                         content="Set Meditation"
                         onPress={() => this.props.navigation.navigate('Meditation', { duration })}
                     />
-                </View>
             </View>
     )}
 
@@ -106,23 +99,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-around', 
         alignItems: 'center',
-    },
-    backNavigationContainer: {
-        flex: 0.5,
-        width: "100%",
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: 50,
-        paddingBottom: 50,
-        paddingHorizontal: 25,
-    },
-    backNavigation: {
-        flex: 0.5,
-        width: "100%",
-        alignItems: 'flex-start',
-    },
-    backNavigationIcon: {
-        flex: 0.5,
     },
     instructionsContainer: {
         flex: 0.5,
@@ -165,12 +141,6 @@ const styles = StyleSheet.create({
     },
     footerSpacer: {
         flex: 1,
-    },
-    footerContainer: {
-        position: "absolute",
-        bottom: 20,
-        width: "100%",
-        alignItems: "center",
     },
 });
 

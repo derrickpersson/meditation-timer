@@ -5,6 +5,7 @@ import { Button } from '../../components/Button';
 import { asyncStorageMeditationSessionRepository, MeditationRecords } from '../../utilities/MeditationSessionRepository';
 import { meditationAnalysisService } from '../../utilities/MeditationAnalysisService';
 import { Quote, quotationService } from '../../utilities/QuotationService';
+import { FooterButton } from '../../components/FooterButton/FooterButton';
 
 export interface Props {
   navigation: any;
@@ -84,12 +85,10 @@ class HomeScreen extends React.Component<Props, State> {
           <Text style={styles.authorText}>- {this.state.quote.author}</Text>
         </View>
       </View>
-        <View style={styles.footerContainer}>
-          <Button
-            content="Meditate"
-            onPress={() => this.props.navigation.push('MeditationSelection')}
-          />
-        </View>
+        <FooterButton
+          content="Meditate"
+          onPress={() => this.props.navigation.push('MeditationSelection')}
+        />
     </View>)
   }
 }

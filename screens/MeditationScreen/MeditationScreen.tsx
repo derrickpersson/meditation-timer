@@ -1,17 +1,18 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Slider } from "react-native";
 import { Audio } from "expo-av";
+import { Ex } from "../../components";
+import { FooterButton } from "../../components/FooterButton/FooterButton";
 
 class MeditationScreen extends React.Component<any, any> {
     private playbackInstance: any;
-    private isSeeking: boolean;
-    private shouldPlayAtEndOfSeek: boolean;
+    static navigationOptions = {
+        header: null,
+    };
 
     constructor(props) {
         super(props);
         this.playbackInstance = null;
-        this.isSeeking = false;
-        this.shouldPlayAtEndOfSeek = false;
         this.state = {
             playbackInstancePosition: null,
             playbackInstanceDuration: null,
@@ -25,25 +26,30 @@ class MeditationScreen extends React.Component<any, any> {
     }
 
     public componentDidMount() {
-        this.loadNewPlaybackInstance(this.state.isPlaying);
+        this.loadNewPlaybackInstance();
     }
 
     public render() {
         return (
-            <View style={{ flex: 1, alignItems: "center", justifyContent: "space-around" }}>
-                <Slider 
-                    style={styles.playbackSlider}
-                    value={this.getSeekSliderPosition()}
-                    onValueChange={this.onSeekSliderValueChange}
-                    onSlidingComplete={this.onSeekSliderSlidingComplete}
-                    disabled={this.state.isLoading}
-                />
-                <Text>{this.getMMSSFromMillis(this.state.playbackInstancePosition)}</Text>
-                <TouchableOpacity
+            <View style={styles.screenContainer}>
+                <View style={styles.backNavigationContainer}>
+                    <TouchableOpacity
+                        style={styles.backNavigation}
+                        onPress={() => this.props.navigation.goBack()}
+                    >
+                        <Ex 
+                            containerStyle={styles.backNavigationIcon}
+                        />
+                    </TouchableOpacity>
+                    <View>
+                        <Text>{this.props.navigation.state.params.duration} minute meditation</Text>
+                    </View>
+                </View>
+                <Text style={styles.timerDisplay}>{this.getMMSSFromMillis(this.state.playbackInstancePosition)}</Text>
+                <FooterButton
                     onPress={this.onPlayPausePressed}
-                >
-                    <Text>{this.state.isPlaying ? "Pause" : "Play"}</Text>
-                </TouchableOpacity>
+                    content={this.state.isPlaying ? "Pause" : "Play"}
+                />
             </View>
         )
     }
@@ -59,7 +65,7 @@ class MeditationScreen extends React.Component<any, any> {
         }
     }
 
-    private async loadNewPlaybackInstance(playing) {
+    private async loadNewPlaybackInstance() {
         if (this.playbackInstance != null) {
             await this.playbackInstance.stopAsync();
             await this.playbackInstance.unloadAsync();
@@ -80,18 +86,23 @@ class MeditationScreen extends React.Component<any, any> {
         const source = mediationFiles[duration];
 
         const initialStatus = {
-            shouldPlay: playing,
+            shouldPlay: false,
             volume: this.state.volume,
             isMuted: this.state.muted,
         };
 
-        const { sound, status } = await Audio.Sound.createAsync(
-            source,
-            initialStatus,
-            this.onPlaybackStatusUpdate
-        );
-
+        try {
+            const { sound, status } = await Audio.Sound.createAsync(
+                source,
+                initialStatus,
+                this.onPlaybackStatusUpdate,
+                true, // TODO: make this false & handle buffering events
+            );
         this.playbackInstance = sound;
+        } catch (error) {
+            console.error(`Fatal error: `, error);
+            this.loadNewPlaybackInstance();
+        }
 
         this.updateScreenForLoading(false);
     }
@@ -157,40 +168,6 @@ class MeditationScreen extends React.Component<any, any> {
         return padWithZero(minutes) + ":" + padWithZero(seconds);
     }
 
-    private getSeekSliderPosition() {
-        if (
-          this.playbackInstance != null &&
-          this.state.playbackInstancePosition != null &&
-          this.state.playbackInstanceDuration != null
-        ) {
-          return (
-            this.state.playbackInstancePosition /
-            this.state.playbackInstanceDuration
-          );
-        }
-        return 0;
-    }
-
-    private onSeekSliderValueChange = value => {
-        if (this.playbackInstance != null && !this.isSeeking) {
-          this.isSeeking = true;
-          this.shouldPlayAtEndOfSeek = this.state.shouldPlay;
-          this.playbackInstance.pauseAsync();
-        }
-    };
-
-    private onSeekSliderSlidingComplete = async value => {
-        if (this.playbackInstance != null) {
-          this.isSeeking = false;
-          const seekPosition = value * this.state.playbackInstanceDuration;
-          if (this.shouldPlayAtEndOfSeek) {
-            this.playbackInstance.playFromPositionAsync(seekPosition);
-          } else {
-            this.playbackInstance.setPositionAsync(seekPosition);
-          }
-        }
-    };
-
     private completeMeditation = () => {
         this.unloadPlaybackInstance();
         this.props.navigation.navigate('MeditationSuccess', {
@@ -200,8 +177,31 @@ class MeditationScreen extends React.Component<any, any> {
 }
 
 const styles = StyleSheet.create({
-    playbackSlider:   {
-        alignSelf: "stretch"
+    screenContainer: {
+        flex: 1,
+        justifyContent: 'flex-start', 
+        alignItems: 'center',
+    },
+    backNavigationContainer: {
+        flex: 1,
+        width: "100%",
+        flexDirection: "row",
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        paddingHorizontal: 25,
+    },
+    backNavigation: {
+        flex: 1,
+        width: "100%",
+        alignItems: 'flex-start',
+    },
+    backNavigationIcon: {
+        flex: 0.5,
+    },
+    timerDisplay: {
+        flex: 3,
+        fontSize: 50,
+        justifyContent: "center",
     }
 });
 
