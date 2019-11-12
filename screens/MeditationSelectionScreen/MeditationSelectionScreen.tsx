@@ -69,10 +69,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.footerSpacer}></View>
-                    <FooterButton
-                        content="Set Meditation"
-                        onPress={() => this.props.navigation.navigate('Meditation', { duration })}
-                    />
+                <FooterButton
+                    content="Set Meditation"
+                    onPress={() => this.props.navigation.navigate('Meditation', { duration })}
+                />
             </View>
     )}
 
