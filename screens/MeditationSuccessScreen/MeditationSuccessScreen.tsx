@@ -3,10 +3,9 @@ import { View, Text, StyleSheet } from "react-native";
 import { asyncStorageMeditationSessionRepository, MeditationRecords } from "../../utilities/MeditationSessionRepository";
 import { meditationAnalysisService } from "../../utilities/MeditationAnalysisService";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
-
-export interface Props {
-    navigation: any;
-}
+import AnimatedNumber from "react-native-animated-number";
+import { numberFormatter } from "../../utilities/numberFormatter";
+import { NavigationInjectedProps } from "react-navigation";
 
 export interface State {
     totalMinutes: number;
@@ -14,27 +13,23 @@ export interface State {
     weeklyMinutes: number;
 }
 
-export class MeditationSuccessScreen extends React.Component<Props, State> {
+export class MeditationSuccessScreen extends React.Component<NavigationInjectedProps, State> {
     static navigationOptions = {
         header: null,
     }
 
-    constructor(props){
+    public constructor(props){
         super(props);
 
         this.state = {
-            totalMinutes: 0,
-            dayStreak: 0,
-            weeklyMinutes: 0,
+            totalMinutes: null,
+            dayStreak: null,
+            weeklyMinutes: null,
         }
     }
 
 
     public async componentDidMount() {
-        await asyncStorageMeditationSessionRepository.createMeditationSession({
-            duration: this.props.navigation.state.params.duration,
-            createdDate: new Date(),
-        });
         const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
         const sessions = meditationRecords.meditationSessions;
         this.setState({
@@ -42,29 +37,59 @@ export class MeditationSuccessScreen extends React.Component<Props, State> {
             totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
             weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
             dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
+        }, async () => {
+            await asyncStorageMeditationSessionRepository.createMeditationSession({
+                duration: this.props.navigation.state.params.duration,
+                createdDate: new Date(),
+            });
+            const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
+            const sessions = meditationRecords.meditationSessions;
+            this.setState({
+                ...this.state,
+                totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
+                weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
+                dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
+            });
         });
     }
 
     public render() {
+
+        const animatedNumberSettings = {
+            steps: 100,
+            time: 30,
+            formatter: numberFormatter,
+            style: styles.headingText,
+        }
+
         return (
             <View style={styles.screenContainer}>
                 <View style={styles.footerSpacer}></View>                
                 <View style={styles.individualStatsContainer}>
-                    <Text style={styles.headingText}>{this.state.dayStreak}</Text>
+                    {this.state.dayStreak && <AnimatedNumber 
+                        value={this.state.dayStreak}
+                        {...animatedNumberSettings}
+                    />}
                     <Text style={styles.subheadingText}>day streak</Text>
                 </View>
                 <View style={styles.individualStatsContainer}>
-                    <Text style={styles.headingText}>{this.state.weeklyMinutes}</Text>
+                    {this.state.weeklyMinutes && <AnimatedNumber 
+                        value={this.state.weeklyMinutes} 
+                        {...animatedNumberSettings}
+                    />}
                     <Text style={styles.subheadingText}>minutes this week</Text>
                 </View>
                 <View style={styles.individualStatsContainer}>
-                    <Text style={styles.headingText}>{this.state.totalMinutes}</Text>
+                    {this.state.totalMinutes && <AnimatedNumber 
+                        value={this.state.totalMinutes} 
+                        {...animatedNumberSettings}
+                    />}
                     <Text style={styles.subheadingText}>minutes total</Text>
                 </View>
                 <View style={styles.footerSpacer}></View>
                 <FooterButton
                     content="Finish"
-                    onPress={() => this.props.navigation.navigate('Home')}
+                    onPress={() => (this.props.navigation as any).popToTop()}
                 />
             </View>
         )
