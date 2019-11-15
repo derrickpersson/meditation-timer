@@ -56,6 +56,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
                 <View style={styles.footerSpacer}></View>
                 <FooterButton
                     onPress={this.onPlayPausePressed}
+                    // onLongPress={this.completeMeditation}
                     content={this.state.isPlaying ? "Pause" : "Play"}
                 />
             </View>

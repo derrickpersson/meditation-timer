@@ -7,11 +7,13 @@ export const FooterButton = ({
     content,
     onPress,
     style = {},
+    ...props
 }) => (
     <View style={[styles.footerContainer, style]}>
         <Button
             content={content}
             onPress={onPress}
+            {...props}
         />
     </View>
 )

@@ -1,38 +1,45 @@
-import { MeditationSessionRepository, MeditationRecords } from ".";
+import { MeditationSessionRepository, MeditationRecords, MeditationSession, MeditationSessionInput, SortBy } from ".";
 import { AsyncStorage } from 'react-native';
 import { uuid } from "../uuid";
 
 const meditationSessionsKey = "MEDITATION_SESSIONS";
 
 export class AsyncStorageMeditationSessionRepository implements MeditationSessionRepository {
-    public getMeditationSession(id: string) {
+    public getMeditationSession(id: string): Promise<MeditationRecords> {
         return new Promise((resolve, reject) => AsyncStorage.getItem(meditationSessionsKey, (error, result) => {
             if(error){
                 reject(error);
             }
             if(result){
-                const meditationSession = result.meditationSessions.find((session) => session.id === id);
-                resolve(meditationSession);
+                try {
+                    const parsedResult = JSON.parse(result);
+                    const meditationSession: MeditationSession = parsedResult.meditationSessions.find((session: MeditationSession) => session.id === id);
+                    resolve({
+                        meditationSessions: [meditationSession]
+                    });
+                } catch (error){
+                    reject(error);
+                }
             }
         }));
     }
 
 
-    createMeditationSession(meditationSessionInput: MeditationSessionInput){
+    public createMeditationSession(meditationSessionInput: MeditationSessionInput): Promise<void>{
         return new Promise((resolve, reject) => {
             AsyncStorage.getItem(meditationSessionsKey, (error, result) => {
                 let meditationSessions;
                 if(result){
                     const parsedResult = JSON.parse(result);
                     parsedResult.meditationSessions.push({
-                        id: uuid.create(),
+                        id: uuid.create(0),
                         ...meditationSessionInput,
                     });
                     meditationSessions = JSON.stringify(parsedResult);
                 } else {
                     meditationSessions = JSON.stringify({
                         meditationSessions: [{
-                            id: uuid.create(),
+                            id: uuid.create(0),
                             ...meditationSessionInput,
                         }],
                     });
@@ -48,12 +55,24 @@ export class AsyncStorageMeditationSessionRepository implements MeditationSessio
     }
 
 
-    getMeditationSessions(limit?: number, sort?: SortBy): Promise<MeditationRecords>{
+    public getMeditationSessions(limit?: number, sort?: SortBy): Promise<MeditationRecords>{
         return new Promise((resolve, reject) => AsyncStorage.getItem(meditationSessionsKey, (error, result) => {
             if(error){
                 reject(error);
             }
-            resolve(JSON.parse(result));
+
+            if(result){
+                try {
+                    const parsedResult = JSON.parse(result);
+                    resolve(parsedResult);
+                } catch (error){
+                    reject(error);
+                }    
+            }
+
+            resolve({
+                meditationSessions: []
+            });
         }));
     }
 }

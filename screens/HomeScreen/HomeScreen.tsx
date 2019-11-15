@@ -22,6 +22,8 @@ class HomeScreen extends React.Component<Props, State> {
   static navigationOptions = {
     header: null
   }
+  
+  private didFocusSubscription;
 
   constructor(props){
     super(props);
@@ -33,14 +35,17 @@ class HomeScreen extends React.Component<Props, State> {
   }
 
   public async componentDidMount() {
-    const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
-    const sessions = meditationRecords.meditationSessions;
-    this.setState({
-        ...this.state,
-        totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
-        weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
-        dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
-    });
+    await this.fetchData();
+    this.didFocusSubscription = this.props.navigation.addListener(
+      'didFocus',
+      () => {
+        this.fetchData();
+      }
+    );
+  }
+
+  public componentWillUnmount() {
+    this.didFocusSubscription.remove();
   }
 
   public render() {
@@ -73,6 +78,17 @@ class HomeScreen extends React.Component<Props, State> {
           onPress={() => this.props.navigation.push('MeditationSelection')}
         />
     </View>)
+  }
+
+  private async fetchData() {
+    const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
+    const sessions = meditationRecords.meditationSessions;
+    this.setState({
+        ...this.state,
+        totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
+        weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
+        dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
+    });
   }
 }
 

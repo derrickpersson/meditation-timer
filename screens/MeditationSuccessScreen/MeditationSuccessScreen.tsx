@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { asyncStorageMeditationSessionRepository, MeditationRecords } from "../../utilities/MeditationSessionRepository";
 import { meditationAnalysisService } from "../../utilities/MeditationAnalysisService";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
-import AnimatedNumber from "react-native-animated-number";
+import AnimateNumber from "react-native-animate-number";
 import { numberFormatter } from "../../utilities/numberFormatter";
 import { NavigationInjectedProps } from "react-navigation";
 
@@ -32,12 +32,17 @@ export class MeditationSuccessScreen extends React.Component<NavigationInjectedP
     public async componentDidMount() {
         const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
         const sessions = meditationRecords.meditationSessions;
+        console.log("Sessions: ", sessions);
+        console.log("1: ", meditationAnalysisService.getTotalMeditatedMinutes(sessions));
+        console.log("2: ", meditationAnalysisService.getWeeklyMeditatedMinutes(sessions));
+        console.log("3: ", meditationAnalysisService.getDayStreakCount(sessions));
         this.setState({
             ...this.state,
             totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
             weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
             dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
         }, async () => {
+            console.log("Updated state: ", this.state);
             await asyncStorageMeditationSessionRepository.createMeditationSession({
                 duration: this.props.navigation.state.params.duration,
                 createdDate: new Date(),
@@ -56,32 +61,32 @@ export class MeditationSuccessScreen extends React.Component<NavigationInjectedP
     public render() {
 
         const animatedNumberSettings = {
-            steps: 100,
-            time: 30,
             formatter: numberFormatter,
             style: styles.headingText,
+            timing: "easeIn",
+            countBy: 1
         }
 
         return (
             <View style={styles.screenContainer}>
                 <View style={styles.footerSpacer}></View>                
                 <View style={styles.individualStatsContainer}>
-                    {this.state.dayStreak && <AnimatedNumber 
-                        value={this.state.dayStreak}
+                    {!!this.state.dayStreak && <AnimateNumber 
+                        value={this.state.dayStreak || 0}
                         {...animatedNumberSettings}
                     />}
                     <Text style={styles.subheadingText}>day streak</Text>
                 </View>
                 <View style={styles.individualStatsContainer}>
-                    {this.state.weeklyMinutes && <AnimatedNumber 
-                        value={this.state.weeklyMinutes} 
+                    {!!this.state.weeklyMinutes && <AnimateNumber 
+                        value={this.state.weeklyMinutes || 0} 
                         {...animatedNumberSettings}
                     />}
                     <Text style={styles.subheadingText}>minutes this week</Text>
                 </View>
                 <View style={styles.individualStatsContainer}>
-                    {this.state.totalMinutes && <AnimatedNumber 
-                        value={this.state.totalMinutes} 
+                    {!!this.state.totalMinutes && <AnimateNumber 
+                        value={this.state.totalMinutes || 0} 
                         {...animatedNumberSettings}
                     />}
                     <Text style={styles.subheadingText}>minutes total</Text>

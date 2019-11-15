@@ -3,14 +3,14 @@ import moment from "moment";
 
 export class MeditationAnalysisService {
     public getTotalMeditatedMinutes(meditationSessions: MeditationSession[]){
-        return meditationSessions.reduce(this.sumDuration, 0);
+        return meditationSessions.reduce(this.sumDuration, 0) || 0;
     }
 
     public getWeeklyMeditatedMinutes(meditationSessions: MeditationSession[]){
         return meditationSessions.filter((session) => {
             const lastSunday = moment().day(0).startOf('day');
             return moment(session.createdDate).isSameOrAfter(lastSunday);
-        }).reduce(this.sumDuration, 0);
+        }).reduce(this.sumDuration, 0) || 0;
     }
 
     public getDayStreakCount(meditationSessions: MeditationSession[]) {
@@ -59,6 +59,7 @@ export class MeditationAnalysisService {
     };
 
     private sumDuration = (result, meditationSession) => {
+        console.log("MeditationSession: ", meditationSession, result);
         return result = result + meditationSession.duration;
     }
 }

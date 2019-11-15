@@ -21,7 +21,7 @@ export const QuotationDisplay = () => {
                 <OpenQuotationMark />
             </View>
         </View>
-        <Text style={styles.headingText}>{quote.text}</Text>
+        <Text style={styles.headingText} adjustsFontSizeToFit={true}>{quote.text}</Text>
         <View style={[styles.quotationMarkContainer, styles.closeQuotation]}>
             <View style={styles.quotationMark}>
                 <CloseQuotationMark />
@@ -41,8 +41,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
       },
       headingText: {
+        flex: 1,
         fontSize: 25,
+        lineHeight: 30,
         textAlign: "center",
+        textAlignVertical: "center",
+        paddingHorizontal: 25,
       },
       quotationMarkContainer: {
         flex: 0.1,
@@ -56,7 +60,7 @@ const styles = StyleSheet.create({
       openQuotation: {
         alignItems: "flex-start",
         width: "100%",
-        paddingBottom: 50,
+        paddingBottom: 25,
         paddingHorizontal: 50,
       },
       closeQuotation: {
@@ -64,14 +68,14 @@ const styles = StyleSheet.create({
         alignItems: "flex-end",
         width: "100%",
         paddingHorizontal: 50,
-        paddingTop: 50,
+        paddingTop: 25,
       },
       authorTextContainer: {
-        flex: 0.5,
+        flex: 1,
         width: "100%",
         alignItems: "flex-end",
         paddingHorizontal: 25,
-        paddingTop: 50,
+        paddingTop: 25,
       },
       authorText: {
         color: "#A6A3A3",

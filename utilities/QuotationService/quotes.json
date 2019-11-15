@@ -1,6 +1,10 @@
 {
     "quotes": [
         {
+            "author": "Steve Maraboli",
+            "text": "Letting go means to come to the realization that some people are a part of your history, but not a part of your destiny."
+        },
+        {
             "author": "Anais Nin",
             "text": "Life shrinks or expands in porportion to one's courage"
         },
@@ -57,10 +61,6 @@
             "text": "Don't be pushed around by the fears in your mind. Be led by the dreams in your heart."
         },
         {
-            "author": "Steve Maraboli",
-            "text": "Letting go means to come to the realization that some people are a part of your history, but not a part of your destiny."
-        },
-        {
             "author": "Roy T. Bennett",
             "text": "Pursue what catches your heart, not what catches your eyes."
         },
@@ -71,50 +71,6 @@
         {
             "author": "Roy T. Bennett",
             "text": "Start each day with a positive thought and a grateful heart."
-        },
-        {
-            "author": "Roy T. Bennett",
-            "text": "Do not let the memories of your past limit the potential of your future. There are no limits to what you can achieve on your journey through life, except in your mind."
-        },
-        {
-            "author": "Confucius",
-            "text": "The man who moves a mountain begins by carrying away small stones."
-        },
-        {
-            "author": "Wayne W. Dyer",
-            "text": "Change the way you look at things and the things you look at change."
-        },
-        {
-            "author": "William Shakespear",
-            "text": "There is nothing either good or bad, but thinking makes it so."
-        },
-        {
-            "author": "Mo Willems",
-            "text": "If you ever find yourself in the wrong story, leave."
-        },
-        {
-            "author": "Eckhart Tolle",
-            "text": "The past has no power over the present moment."
-        },
-        {
-            "author": "Friedrich Nietzsche",
-            "text": "When we are tired, we are attacked by ideas we conquered long ago."
-        },
-        {
-            "author": "Confucius",
-            "text": "Life is really simple, but we insist on making it complicated."
-        },
-        {
-            "author": "Socrates",
-            "text": "Be kind, for everyone you meet is fighting a hard battle."
-        },
-        {
-            "author": "Marcus Aurelius",
-            "text": "Never let the future disturb you. You will meet it, if you have to, with the same weapons of reason which today arm you against the present."
-        },
-        {
-            "author": "Seneca",
-            "text": "If what you have seems insufficient to you, then though you possess the world, you will yet be miserable."
         }
     ]
 }

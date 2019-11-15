@@ -6,11 +6,13 @@ export const Button = ({
     buttonStyles = {},
     content = "",
     onPress,
+    ...props
 }) => (
     <View style={[styles.actionContainer, containerStyles]}>
         <TouchableOpacity
             style={[styles.baseButtonStyles, buttonStyles]}
             onPress={onPress}
+            {...props}
         >
             <Text style={styles.baseButtonContentStyle}>{content}</Text>
         </TouchableOpacity>
