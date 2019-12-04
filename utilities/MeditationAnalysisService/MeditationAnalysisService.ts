@@ -59,7 +59,6 @@ export class MeditationAnalysisService {
     };
 
     private sumDuration = (result, meditationSession) => {
-        console.log("MeditationSession: ", meditationSession, result);
         return result = result + meditationSession.duration;
     }
 }

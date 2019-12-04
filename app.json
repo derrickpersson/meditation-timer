@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Intentful - Meditation Timer",
+    "name": "Intentful Timer",
     "slug": "mobile",
     "privacy": "public",
     "sdkVersion": "35.0.0",
@@ -24,7 +24,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
     },
     "android": {
       "package": "com.intentful.intentfulmeditationtimer"
