@@ -7,6 +7,7 @@ import { meditationAnalysisService } from '../../utilities/MeditationAnalysisSer
 import { Quote, quotationService } from '../../utilities/QuotationService';
 import { FooterButton } from '../../components/FooterButton/FooterButton';
 import { QuotationDisplay } from '../../components/QuotationDisplay';
+import { numberFormatter } from '../../utilities';
 
 export interface Props {
   navigation: any;
@@ -56,15 +57,15 @@ class HomeScreen extends React.Component<Props, State> {
         <Text style={[styles.meditationStatsHeader, styles.whiteText]}>Your practice</Text>
         <View style={styles.meditationStatsContainer}>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{this.state.weeklyMinutes}</Text>
+            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.weeklyMinutes)}</Text>
             <Text style={[styles.subheadingText, styles.whiteText]}>minutes this week</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{this.state.dayStreak}</Text>
+            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.dayStreak)}</Text>
             <Text style={[styles.subheadingText, styles.whiteText]}>day streak</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{this.state.totalMinutes}</Text>
+            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.totalMinutes)}</Text>
             <Text style={[styles.subheadingText, styles.whiteText]}>minutes total</Text>
           </View>
         </View>

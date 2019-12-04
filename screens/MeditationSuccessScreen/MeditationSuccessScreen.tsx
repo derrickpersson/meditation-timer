@@ -32,17 +32,12 @@ export class MeditationSuccessScreen extends React.Component<NavigationInjectedP
     public async componentDidMount() {
         const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
         const sessions = meditationRecords.meditationSessions;
-        console.log("Sessions: ", sessions);
-        console.log("1: ", meditationAnalysisService.getTotalMeditatedMinutes(sessions));
-        console.log("2: ", meditationAnalysisService.getWeeklyMeditatedMinutes(sessions));
-        console.log("3: ", meditationAnalysisService.getDayStreakCount(sessions));
         this.setState({
             ...this.state,
             totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
             weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
             dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
         }, async () => {
-            console.log("Updated state: ", this.state);
             await asyncStorageMeditationSessionRepository.createMeditationSession({
                 duration: this.props.navigation.state.params.duration,
                 createdDate: new Date(),

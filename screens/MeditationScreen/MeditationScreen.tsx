@@ -4,6 +4,7 @@ import { Audio } from "expo-av";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackNavigation } from "../../components/BackNavigation";
 import { NavigationInjectedProps } from "react-navigation";
+import { INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS, INTERRUPTION_MODE_ANDROID_DUCK_OTHERS } from "expo-av/build/Audio";
 
 export interface State {
     playbackInstancePosition: number | null;
@@ -43,7 +44,27 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
         }
     }
 
-    public componentDidMount() {
+    public async componentDidMount() {
+        const defaultOptions = {
+            playsInSilentModeIOS: false,
+            allowsRecordingIOS: false,
+            staysActiveInBackground: false,
+            interruptionModeIOS: INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+            shouldDuckAndroid: true,
+            interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+            playThroughEarpieceAndroid: false,
+        }
+
+        const mode = {
+            ...defaultOptions,
+            staysActiveInBackground: true,
+        };
+
+        try {
+            await Audio.setAudioModeAsync(mode);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
         this.loadNewPlaybackInstance();
     }
 
