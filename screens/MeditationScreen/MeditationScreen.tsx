@@ -5,6 +5,7 @@ import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackNavigation } from "../../components/BackNavigation";
 import { NavigationInjectedProps } from "react-navigation";
 import { INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS, INTERRUPTION_MODE_ANDROID_DUCK_OTHERS } from "expo-av/build/Audio";
+import { BackHandler } from 'react-native';
 
 export interface State {
     playbackInstancePosition: number | null;
@@ -66,6 +67,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
             console.log("Error: ", error);
         }
         this.loadNewPlaybackInstance();
+        BackHandler.addEventListener(
+            'hardwareBackPress',
+            this.handleBackButtonPressAndroid
+        );
     }
 
     public render() {
@@ -86,6 +91,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
 
     public componentWillUnmount() {
         this.unloadPlaybackInstance();
+        BackHandler.removeEventListener(
+            'hardwareBackPress',
+            this.handleBackButtonPressAndroid
+        );
     }
 
     private async unloadPlaybackInstance() {
@@ -176,11 +185,9 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     private onPlayPausePressed = () => {
         if (this.playbackInstance != null) {
             if (this.state.isPlaying) {
-                this.playbackInstance.pauseAsync();
-                this.props.navigation.setParams({ isPlaying: false });
+                this.pausePlayback();
             } else {
-                this.playbackInstance.playAsync();
-                this.props.navigation.setParams({ isPlaying: true });
+                this.playPlayback();
             }
         }
     };
@@ -205,6 +212,26 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
         this.props.navigation.navigate('MeditationSuccess', {
             duration: this.props.navigation.state.params.duration,
         });
+    }
+
+    private pausePlayback = () => {
+        this.playbackInstance.pauseAsync();
+        this.props.navigation.setParams({ isPlaying: false });
+    }
+
+    private playPlayback = () => {
+        this.playbackInstance.playAsync();
+        this.props.navigation.setParams({ isPlaying: true });
+    }
+
+    private handleBackButtonPressAndroid = () => {
+        if (this.playbackInstance != null) {
+            if (this.state.isPlaying) {
+                this.pausePlayback();
+                return true;
+            }
+        }
+        return false;
     }
 }
 
