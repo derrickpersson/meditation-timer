@@ -32,7 +32,8 @@
       }
     },
     "android": {
-      "package": "com.intentful.intentfulmeditationtimer"
+      "package": "com.intentful.intentfulmeditationtimer",
+      "permissions": []
     }
   }
 }
