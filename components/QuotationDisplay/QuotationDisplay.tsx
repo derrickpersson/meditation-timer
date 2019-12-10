@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
       },
       headingText: {
-        flex: 1,
         fontSize: 25,
         lineHeight: 30,
         textAlign: "center",

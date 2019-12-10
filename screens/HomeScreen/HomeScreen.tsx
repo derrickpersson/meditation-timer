@@ -130,12 +130,10 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
   },
-  footerContainer: {
-    position: "absolute",
-    bottom: 20,
+  footerSpacer: {
+    flex: 1,
     width: "100%",
-    alignItems: "center",
-  }
+  },
 })
 
 export default HomeScreen;

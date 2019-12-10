@@ -8,6 +8,7 @@ const UpArrow = (props) => {
             style={[
             StyleSheet.absoluteFill,
             { alignItems: 'center', justifyContent: 'center' },
+            props.style,
             ]}
         >
             <Svg width="95px" height="30px" viewBox="0 0 95 30" {...props}>

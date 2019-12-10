@@ -15,7 +15,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     public constructor(props){
         super(props);
         this.state = {
-            selectedDuration: 0,
+            selectedDuration: 2,
             instructionText: "",
         };
     }
@@ -30,6 +30,9 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     public render() {
     const duration = this.durationOptions[this.state.selectedDuration];
 
+    const minSelected = this.state.selectedDuration === 0;
+    const maxSelected = this.state.selectedDuration === (this.durationOptions.length - 1);
+
     return (
             <View style={styles.screenContainer}>
                 <View style={styles.instructionsContainer}>
@@ -37,14 +40,14 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                 </View>
                 <View style={styles.selectionContainer}>
                     <TouchableOpacity
-                        style={styles.upArrowContainer}
+                        style={[styles.upArrowContainer]}
                         onPress={() => {
                             this.setState({
-                                selectedDuration: this.state.selectedDuration === 0 ? 0 : this.state.selectedDuration - 1,
+                                selectedDuration: this.state.selectedDuration === (this.durationOptions.length - 1) ? (this.durationOptions.length - 1) : this.state.selectedDuration + 1,
                             });
                         }}
                     >
-                        <UpArrow />
+                        <UpArrow style={maxSelected ? styles.disabledArrow: styles.enabledArrow}/>
                     </TouchableOpacity>
                     <View style={styles.durationDisplayContainer}>
                         <View style={{flex: 1}}>
@@ -58,14 +61,14 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                         </View>
                     </View>
                     <TouchableOpacity
-                        style={styles.downArrow}
+                        style={[styles.downArrow]}
                         onPress={() => {
                             this.setState({
-                                selectedDuration: this.state.selectedDuration === (this.durationOptions.length - 1) ? (this.durationOptions.length - 1) : this.state.selectedDuration + 1,
+                                selectedDuration: this.state.selectedDuration === 0 ? 0 : this.state.selectedDuration - 1,
                             });
                         }}
                     >
-                        <DownArrow />
+                        <DownArrow style={minSelected ? styles.disabledArrow: styles.enabledArrow}/>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.footerSpacer}></View>
@@ -79,9 +82,9 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     private getInstructionText() {
         const instructionTexts = [
             "Take a minute for yourself",
-            "Be present.",
+            "Be present",
             "Your to do’s can wait",
-            "Just focus on your breathe",
+            "Just focus on your breath",
             "You deserve this",
         ];
 
@@ -119,6 +122,12 @@ const styles = StyleSheet.create({
         flex: 0.5,
         alignItems: "center", 
         justifyContent: "center" 
+    },
+    enabledArrow: {
+        opacity: 1,
+    },
+    disabledArrow: {
+        opacity: 0.2,
     },
     durationDisplayContainer: {
         flex: 0.25,
