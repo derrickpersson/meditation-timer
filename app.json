@@ -33,7 +33,8 @@
     },
     "android": {
       "package": "com.intentful.intentfulmeditationtimer",
-      "permissions": []
+      "permissions": [],
+      "versionCode": 2
     }
   }
 }
