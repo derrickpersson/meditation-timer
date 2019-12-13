@@ -39,7 +39,8 @@ export class MeditationSuccessScreen extends React.Component<NavigationInjectedP
             dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
         }, async () => {
             await asyncStorageMeditationSessionRepository.createMeditationSession({
-                duration: this.props.navigation.state.params.duration,
+                duration: this.props.navigation.state.params && this.props.navigation.state.params.duration,
+                intention: this.props.navigation.state.params && this.props.navigation.state.params.intention,
                 createdDate: new Date(),
             });
             const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();

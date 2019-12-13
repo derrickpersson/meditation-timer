@@ -1,11 +1,13 @@
 export interface MeditationSessionInput {
     duration: number;
+    intention: string;
     createdDate: Date;
 }
 
 export interface MeditationSession {
     id: string;
     duration: number;
+    intention: string;
     createdDate: Date;
 }
 

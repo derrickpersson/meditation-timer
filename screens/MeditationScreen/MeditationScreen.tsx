@@ -210,7 +210,8 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     private completeMeditation = () => {
         this.unloadPlaybackInstance();
         this.props.navigation.navigate('MeditationSuccess', {
-            duration: this.props.navigation.state.params.duration,
+            duration: this.props.navigation.state.params && this.props.navigation.state.params.duration,
+            intention: this.props.navigation.state.params && this.props.navigation.state.params.intention,
         });
     }
 

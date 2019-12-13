@@ -4,6 +4,10 @@ import { DownArrow, UpArrow } from "../../components/SvgIcons";
 import { NavigationInjectedProps } from "react-navigation";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackNavigation } from "../../components/BackNavigation";
+import GrattitudeCircle from "../../components/SvgIcons/GrattitudeCircle";
+import HeartCircle from "../../components/SvgIcons/HeartCircle";
+import BalanceCircle from "../../components/SvgIcons/BalanceCircle";
+import { IntentionSelection } from "./IntentionSelection";
 
 class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     static navigationOptions = ( { navigation }) => ({
@@ -17,6 +21,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
         this.state = {
             selectedDuration: 2,
             instructionText: "",
+            selectedIntention: "",
         };
     }
 
@@ -35,8 +40,8 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
 
     return (
             <View style={styles.screenContainer}>
-                <View style={styles.instructionsContainer}>
-                    <Text style={styles.instructionsText}>{this.state.instructionText}</Text>
+                <View style={styles.headingTextContainer}>
+                    <Text style={styles.headingText}>{this.state.instructionText}</Text>
                 </View>
                 <View style={styles.selectionContainer}>
                     <TouchableOpacity
@@ -71,10 +76,36 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                         <DownArrow style={minSelected ? styles.disabledArrow: styles.enabledArrow}/>
                     </TouchableOpacity>
                 </View>
+                <View style={styles.headingTextContainer}>
+                    <Text style={styles.headingText}>Set today's intention</Text>
+                </View>
+                <View style={styles.intentionContainer}>
+                    <IntentionSelection
+                        handleSelection={this.handleIntentionSelection}
+                        SVGIcon={GrattitudeCircle}
+                        value={"gratitude"}
+                        isSelected={this.state.selectedIntention === "gratitude"}
+                    />
+                    <IntentionSelection
+                        handleSelection={this.handleIntentionSelection}
+                        SVGIcon={HeartCircle}
+                        value={"love"}
+                        isSelected={this.state.selectedIntention === "love"}
+                    />
+                    <IntentionSelection
+                        handleSelection={this.handleIntentionSelection}
+                        SVGIcon={BalanceCircle}
+                        value={"balance"}
+                        isSelected={this.state.selectedIntention === "balance"}
+                    />
+                </View>
                 <View style={styles.footerSpacer}></View>
                 <FooterButton
                     content="Set Meditation"
-                    onPress={() => this.props.navigation.navigate('Meditation', { duration })}
+                    onPress={() => this.props.navigation.navigate('Meditation', { 
+                        duration,
+                        intention: this.state.selectedIntention,
+                     })}
                 />
             </View>
     )}
@@ -91,6 +122,20 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
         const randomIndex = (Math.floor(Math.random() * 100)) % instructionTexts.length;
         return instructionTexts[randomIndex];
     }
+
+    private handleIntentionSelection = (value) => {
+        if(this.state.selectedIntention === value) {
+            this.setState({
+                ...this.state,
+                selectedIntention: "",
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                selectedIntention: value,
+            });
+        }
+    }
 };
 
 const styles = StyleSheet.create({
@@ -99,12 +144,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around', 
         alignItems: 'center',
     },
-    instructionsContainer: {
+    headingTextContainer: {
         flex: 0.5,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    instructionsText: {
+    headingText: {
         fontSize: 25,
         fontStyle: "italic",
     },
@@ -143,6 +188,14 @@ const styles = StyleSheet.create({
     durationUnitText: {
         fontSize: 20,
         paddingBottom: 5,
+    },
+    intentionContainer: {
+        flex: 1,
+        flexDirection: "row",
+        width: "100%",
+        paddingHorizontal: 25,
+        paddingVertical: 25,
+        justifyContent: "space-around",
     },
     footerSpacer: {
         flex: 1,
