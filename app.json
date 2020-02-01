@@ -24,6 +24,8 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.intentful.intentfulmeditationtimer",
+      "icon": "./assets/icon-ios.png",
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": [
