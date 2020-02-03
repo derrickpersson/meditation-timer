@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { Platform, View, StyleSheet } from "react-native";
 import { Button } from "../Button";
 import { ForceTouchGestureHandlerProperties } from "react-native-gesture-handler";
 
@@ -21,7 +21,7 @@ export const FooterButton = ({
 const styles = StyleSheet.create({
     footerContainer: {
         position: "absolute",
-        bottom: 20,
+        bottom: Platform.OS === 'ios' ? 40 : 20,
         width: "100%",
         alignItems: "center",
     },

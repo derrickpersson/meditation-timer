@@ -23,6 +23,7 @@ const MainNavigator = createStackNavigator(
     defaultNavigationOptions: {
       headerStyle: {
         shadowColor: 'transparent',
+        borderBottomWidth: 0,
         elevation: 0,
       },
     },

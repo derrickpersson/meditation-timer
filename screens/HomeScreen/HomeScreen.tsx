@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import { OpenQuotationMark, CloseQuotationMark, MeditationHighlightsDivider } from '../../components';
 import { Button } from '../../components/Button';
 import { asyncStorageMeditationSessionRepository, MeditationRecords } from '../../utilities/MeditationSessionRepository';
@@ -53,6 +53,7 @@ class HomeScreen extends React.Component<Props, State> {
   
     return (
     <View style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
+      <StatusBar barStyle="light-content" />
       <View style={styles.meditationHighlightsContainer}>
         <Text style={[styles.meditationStatsHeader, styles.whiteText]}>Your practice</Text>
         <View style={styles.meditationStatsContainer}>

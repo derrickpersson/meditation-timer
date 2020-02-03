@@ -12,6 +12,7 @@
     "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "primaryColor": "#4464FF",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -31,7 +32,8 @@
         "UIBackgroundModes": [
           "audio"
         ]
-      }
+      },
+      "buildNumber": "1.0.0"
     },
     "android": {
       "package": "com.intentful.intentfulmeditationtimer",

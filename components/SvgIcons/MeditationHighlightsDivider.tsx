@@ -7,7 +7,7 @@ const MeditationHighlightsDivider = (props) => {
         <View
             style={[
             StyleSheet.absoluteFill,
-            { alignItems: 'center', justifyContent: 'center' },
+            { alignItems: 'center', justifyContent: 'flex-start' },
             ]}
         >
             <Svg width="100%" height="78px" viewBox="0 0 375 78" >

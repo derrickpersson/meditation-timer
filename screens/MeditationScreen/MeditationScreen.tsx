@@ -4,7 +4,10 @@ import { Audio } from "expo-av";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackNavigation } from "../../components/BackNavigation";
 import { NavigationInjectedProps } from "react-navigation";
-import { INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS, INTERRUPTION_MODE_ANDROID_DUCK_OTHERS } from "expo-av/build/Audio";
+import { 
+    INTERRUPTION_MODE_IOS_DUCK_OTHERS, 
+    INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+} from "expo-av/build/Audio";
 import { BackHandler } from 'react-native';
 
 export interface State {
@@ -46,19 +49,14 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     }
 
     public async componentDidMount() {
-        const defaultOptions = {
-            playsInSilentModeIOS: false,
+        const mode = {
             allowsRecordingIOS: false,
-            staysActiveInBackground: false,
-            interruptionModeIOS: INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
             shouldDuckAndroid: true,
             interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
             playThroughEarpieceAndroid: false,
-        }
-
-        const mode = {
-            ...defaultOptions,
+            playsInSilentModeIOS: true,
             staysActiveInBackground: true,
+            interruptionModeIOS: INTERRUPTION_MODE_IOS_DUCK_OTHERS,
         };
 
         try {
