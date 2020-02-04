@@ -1,6 +1,7 @@
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { Text } from "react-native";
 import { HomeScreen, MeditationSelectionScreen, MeditationScreen, MeditationSuccessScreen } from "./screens";
 
 const MainNavigator = createStackNavigator(
@@ -33,6 +34,13 @@ const MainNavigator = createStackNavigator(
 const AppContainer = createAppContainer(MainNavigator);
 
 class App extends React.Component {
+  public constructor(props){
+    super(props);
+    if (Text.defaultProps == null) Text.defaultProps = {};
+    Text.defaultProps.allowFontScaling = true;
+    Text.defaultProps.maxFontSizeMultiplier = 1.25;
+  }
+
   public render() {
     return (<AppContainer />);
   }
