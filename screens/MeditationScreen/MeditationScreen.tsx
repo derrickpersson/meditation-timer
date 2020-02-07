@@ -9,6 +9,7 @@ import {
     INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
 } from "expo-av/build/Audio";
 import { BackHandler } from 'react-native';
+import { Playlist } from "./Playlist";
 
 export interface State {
     playbackInstancePosition: number | null;
@@ -19,10 +20,15 @@ export interface State {
     isLoading: boolean;
     volume: number;
     muted: boolean;
+    currentIndex: number;
+    numberOfLoops: number;
+    elapsedPlaytime: number,
+    sumOfPreviousPlaylistDurations: number;
 }
 
 class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     private playbackInstance: any;
+    private playlist: any;
     static navigationOptions = ( { navigation }) => ({
         headerLeft: () => <BackNavigation navigation={navigation} hideBackButton={navigation.getParam('isPlaying')} />,
         title: `${navigation.getParam('duration')} minute meditation`,
@@ -36,7 +42,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     constructor(props) {
         super(props);
         this.playbackInstance = null;
+        this.playlist = null;
         this.state = {
+            sumOfPreviousPlaylistDurations: 0,
+            elapsedPlaytime: 0,
             playbackInstancePosition: null,
             playbackInstanceDuration: null,
             shouldPlay: false,
@@ -45,6 +54,8 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
             isLoading: true,
             volume: 1.0,
             muted: false,
+            currentIndex: 0,
+            numberOfLoops: 0,
         }
     }
 
@@ -64,7 +75,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
         } catch (error) {
             console.log("Error: ", error);
         }
-        this.loadNewPlaybackInstance();
+        this.loadNewPlaybackInstance(false);
         BackHandler.addEventListener(
             'hardwareBackPress',
             this.handleBackButtonPressAndroid
@@ -75,7 +86,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
         return (
             <View style={styles.screenContainer}>
                 <View style={styles.timerDisplayContainer}>
-                    <Text style={[styles.timerDisplay, !this.state.isPlaying ? styles.pausedTimerDisplay: {}]}>{this.getMMSSFromMillis(this.state.playbackInstancePosition)}</Text>
+                    <Text style={[styles.timerDisplay, !this.state.isPlaying ? styles.pausedTimerDisplay: {}]}>{this.getMMSSFromMillis(this.state.elapsedPlaytime)}</Text>
                 </View>
                 <View style={styles.footerSpacer}></View>
                 <FooterButton
@@ -102,7 +113,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
         }
     }
 
-    private async loadNewPlaybackInstance() {
+    private async loadNewPlaybackInstance(playing: boolean) {
         if (this.playbackInstance != null) {
             await this.playbackInstance.stopAsync();
             await this.playbackInstance.unloadAsync();
@@ -111,21 +122,16 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
 
         const duration = this.props.navigation.state.params.duration;
 
-        const mediationFiles = {
-            "3": require(`./media/3-minute-meditation.mp3`),
-            "5": require(`./media/5-minute-meditation.mp3`),
-            "10": require(`./media/10-minute-meditation.mp3`),
-            "15": require(`./media/15-minute-meditation.mp3`),
-            "20": require(`./media/20-minute-meditation.mp3`),
-            "30": require(`./media/30-minute-meditation.mp3`),
-        }
+        this.playlist = new Playlist(duration);
 
-        const source = mediationFiles[duration];
+        const playlistItem = this.playlist.playlistItems[this.state.currentIndex];
+        const source = playlistItem.playlistItem.source;
 
         const initialStatus = {
-            shouldPlay: false,
+            shouldPlay: playing,
             volume: this.state.volume,
             isMuted: this.state.muted,
+            isLooping: playlistItem.loopCount > 0,
         };
 
         try {
@@ -135,10 +141,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
                 this.onPlaybackStatusUpdate,
                 true, // TODO: make this false & handle buffering events
             );
-        this.playbackInstance = sound;
+            this.playbackInstance = sound;
         } catch (error) {
             console.error(`Fatal error: `, error);
-            this.loadNewPlaybackInstance();
+            this.loadNewPlaybackInstance(playing);
         }
 
         this.updateScreenForLoading(false);
@@ -147,6 +153,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     private onPlaybackStatusUpdate = status => {
         if (status.isLoaded) {
             this.setState({
+                elapsedPlaytime: this.state.sumOfPreviousPlaylistDurations + status.positionMillis,
                 playbackInstancePosition: status.positionMillis,
                 playbackInstanceDuration: status.durationMillis,
                 shouldPlay: status.shouldPlay,
@@ -156,7 +163,29 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
                 volume: status.volume,
             });
             if (status.didJustFinish) {
-                this.completeMeditation();
+                this.setState({
+                    sumOfPreviousPlaylistDurations: this.state.sumOfPreviousPlaylistDurations + status.durationMillis,
+                });
+                if(this.state.currentIndex === this.playlist.playlistItems.length - 1){
+                    this.completeMeditation();
+                } else {
+                    if(status.isLooping){
+                        if(this.state.numberOfLoops === this.playlist.playlistItems[this.state.currentIndex].loopCount - 1){
+                            this.playbackInstance.setIsLoopingAsync(false);
+                            this.setState({ numberOfLoops: 0 });
+                        } else {
+                            this.setState({ numberOfLoops: this.state.numberOfLoops + 1 })
+                        }
+                    } else {
+                        this.setState({
+                            currentIndex: this.state.currentIndex + 1,
+                        }, () => {
+                            this.loadNewPlaybackInstance(status.shouldPlay)
+                        });
+                    }
+
+                }
+                
             }
         } else {
             if (status.error) {
