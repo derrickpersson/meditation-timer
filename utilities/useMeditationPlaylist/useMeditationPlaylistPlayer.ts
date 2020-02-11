@@ -34,7 +34,7 @@ export const useMeditationPlaylistPlayer = ({
     const [elapsedPlaytime, setElapsedPlaytime] = useState(0);
     const [isLooping, setIsLooping] = useState(false);
 
-    const ref: any = useRef();
+    const playbackInstance: any = useRef();
     const loopCount = useRef(0);
     const currentTrack = useRef(0);
     const sumOfPreviousPlaylistDurations = useRef(0);
@@ -44,7 +44,7 @@ export const useMeditationPlaylistPlayer = ({
     useEffect(() => {
         loadAudioPlayer();
         loadNewPlaybackInstance(playerState.isPlaying, currentTrack.current);
-        return () => unloadPlaybackInstance(ref.current);
+        return () => unloadPlaybackInstance(playbackInstance.current);
     }, []);
 
     useEffect(() => {
@@ -69,18 +69,20 @@ export const useMeditationPlaylistPlayer = ({
     }
 
 
-    const pausePlayback = () => {
-        ref.current.pauseAsync();
-        // props.navigation.setParams({ isPlaying: false });
+    const pausePlayback = (callback?) => {
+        playbackInstance.current.pauseAsync();
+        const futureIsPlayingState = !playerState.isPlaying;
+        callback(futureIsPlayingState);
     }
 
-    const playPlayback = () => {
-        ref.current.playAsync();
-        // props.navigation.setParams({ isPlaying: true });
+    const playPlayback = (callback?) => {
+        playbackInstance.current.playAsync();
+        const futureIsPlayingState = !playerState.isPlaying;
+        callback(futureIsPlayingState);
     }
 
     const handleBackButtonAndroid = () => {
-        if (ref.current != null) {
+        if (playbackInstance.current != null) {
             if (playerState.isPlaying) {
                 pausePlayback();
                 return true;
@@ -89,12 +91,12 @@ export const useMeditationPlaylistPlayer = ({
         return false;
     }
 
-    const onPlayPausePressed = () => {
-        if (ref.current != null) {
+    const onPlayPausePressed = (callback?) => {
+        if (playbackInstance.current != null) {
             if (playerState.isPlaying) {
-                pausePlayback();
+                pausePlayback(callback);
             } else {
-                playPlayback();
+                playPlayback(callback);
             }
         }
     };
@@ -102,19 +104,19 @@ export const useMeditationPlaylistPlayer = ({
     const unloadPlaybackInstance = async (playbackInstance) => {
         if (playbackInstance != null) {
             await playbackInstance.unloadAsync();
-            ref.current = null;
+            playbackInstance.current = null;
         }
     }
 
 
     const loadNewPlaybackInstance = async (playing, currentTrack) => {
-        if(ref.current && isLooping){
-            return ref.current;
+        if(playbackInstance.current && isLooping){
+            return playbackInstance.current;
         }
 
-        if (ref.current != null) {
-            await ref.current.unloadAsync();
-            ref.current = null;
+        if (playbackInstance.current != null) {
+            await playbackInstance.current.unloadAsync();
+            playbackInstance.current = null;
         }
 
         const playlistItemInstruction = playlist.getPlaylistItemInstruction(currentTrack);
@@ -136,7 +138,7 @@ export const useMeditationPlaylistPlayer = ({
                 onPlaybackStatusUpdate,
                 true, // TODO: make this false & handle buffering events
             );
-            ref.current = sound;
+            playbackInstance.current = sound;
         } catch (error) {
             console.error(`Fatal error: `, error);
             loadNewPlaybackInstance(playing, currentTrack);
@@ -162,7 +164,7 @@ export const useMeditationPlaylistPlayer = ({
                 } else {
                     if(status.isLooping){
                         if(loopCount.current === playlist.getPlaylistItemInstruction(currentTrack.current).loopCount - 1){
-                            ref.current.setIsLoopingAsync(false);
+                            playbackInstance.current.setIsLoopingAsync(false);
                             setIsLooping(false);
                             loopCount.current = 0;
                         } else {

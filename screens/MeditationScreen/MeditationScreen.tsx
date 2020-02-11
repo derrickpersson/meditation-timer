@@ -46,6 +46,12 @@ export const MeditationScreen = ({
         handleOnComplete: completeMeditation,
     });
 
+    const handleOnPressPlayPause = () => {
+        handlePlayPause((isPlaying) => {
+            navigation.setParams({ isPlaying });
+        });
+    }
+
     const getMMSSFromMillis = (millis) => {
         const totalSeconds = millis / 1000;
         const seconds = Math.floor(totalSeconds % 60);
@@ -86,7 +92,7 @@ export const MeditationScreen = ({
             </View>
             <View style={styles.footerSpacer}></View>
             <FooterButton
-                onPress={handlePlayPause}
+                onPress={handleOnPressPlayPause}
                 // onLongPress={this.completeMeditation}
                 content={isPlaying ? "Pause" : "Play"}
             />
