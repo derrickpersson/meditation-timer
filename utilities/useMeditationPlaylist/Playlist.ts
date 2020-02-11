@@ -13,7 +13,7 @@ export class MeditationPlaylist implements IPlaylist {
 
     public constructor(duration: number, interval?: Interval){
         const durationInSeconds = duration * 60;
-        const durationOfSilence = durationInSeconds - 20;
+        const durationOfSilence = (durationInSeconds - 20)/10;
 
         this.playerInstructions.push({
             playlistItem: this.bell,
@@ -21,7 +21,8 @@ export class MeditationPlaylist implements IPlaylist {
         });
         this.playerInstructions.push({
             playlistItem: this.silence,
-            loopCount: durationOfSilence,
+            // loopCount: durationOfSilence,
+            loopCount: 2,
         });
         this.playerInstructions.push({
             playlistItem: this.bell,

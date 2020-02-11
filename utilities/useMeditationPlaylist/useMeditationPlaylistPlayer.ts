@@ -32,29 +32,24 @@ export const useMeditationPlaylistPlayer = ({
     });
 
     const [elapsedPlaytime, setElapsedPlaytime] = useState(0);
-    const [sumOfPreviousPlaylistDurations, setSumOfPreviousPlaylistDurations] = useState(0);
-    const [currentTrack, setCurrentTrack] = useState(0);
     const [isLooping, setIsLooping] = useState(false);
 
     const ref: any = useRef();
     const loopCount = useRef(0);
+    const currentTrack = useRef(0);
+    const sumOfPreviousPlaylistDurations = useRef(0);
 
     const [playlist] = useState(new MeditationPlaylist(duration, interval));
 
     useEffect(() => {
         loadAudioPlayer();
-        loadNewPlaybackInstance(playerState.isPlaying, currentTrack);
-
-    }, [currentTrack, loopCount.current, isLooping]);
-
-    useEffect(() => {
-        setSumOfPreviousPlaylistDurations(sumOfPreviousPlaylistDurations + playerState.playbackInstanceDuration);
-        console.log("Called with: ", sumOfPreviousPlaylistDurations, playerState.playbackInstanceDuration, currentTrack, loopCount.current);
-    }, [currentTrack, loopCount.current]);
+        loadNewPlaybackInstance(playerState.isPlaying, currentTrack.current);
+        return () => unloadPlaybackInstance(ref.current);
+    }, []);
 
     useEffect(() => {
-        setElapsedPlaytime(sumOfPreviousPlaylistDurations + playerState.playbackInstancePosition);
-    }, [sumOfPreviousPlaylistDurations, playerState.playbackInstancePosition]);
+        setElapsedPlaytime(sumOfPreviousPlaylistDurations.current + playerState.playbackInstancePosition);
+    }, [playerState.playbackInstancePosition]);
 
     const loadAudioPlayer = async () => {
         const mode = {
@@ -118,7 +113,6 @@ export const useMeditationPlaylistPlayer = ({
         }
 
         if (ref.current != null) {
-            await ref.current.stopAsync();
             await ref.current.unloadAsync();
             ref.current = null;
         }
@@ -162,23 +156,22 @@ export const useMeditationPlaylistPlayer = ({
                 volume: status.volume,
             });
             if (status.didJustFinish) {
-                if(currentTrack === playlist.getPlaylistLength() - 1){
-                    // unloadPlaybackInstance(playbackInstance);
+                sumOfPreviousPlaylistDurations.current = sumOfPreviousPlaylistDurations.current + status.durationMillis;
+                if(currentTrack.current === playlist.getPlaylistLength() - 1){
                     handleOnComplete();
                 } else {
                     if(status.isLooping){
-                        console.log("LoopCount? ", playlist.getPlaylistItemInstruction(currentTrack).loopCount, loopCount.current);
-                        if(loopCount.current === playlist.getPlaylistItemInstruction(currentTrack).loopCount - 1){
+                        if(loopCount.current === playlist.getPlaylistItemInstruction(currentTrack.current).loopCount - 1){
                             ref.current.setIsLoopingAsync(false);
                             setIsLooping(false);
                             loopCount.current = 0;
                         } else {
-                            console.log("Called! ", loopCount);
                             setIsLooping(true);
                             loopCount.current = loopCount.current + 1;
                         }
                     } else {
-                        setCurrentTrack(currentTrack + 1);
+                        currentTrack.current = currentTrack.current + 1;
+                        loadNewPlaybackInstance(status.shouldPlay, currentTrack.current)
                     }
                 }
             }
@@ -194,7 +187,7 @@ export const useMeditationPlaylistPlayer = ({
         playPlayback,
         handlePlayPause: onPlayPausePressed,
         elapsedPlaytime: elapsedPlaytime,
-        isPlaying: playerState.isPlaying,
+        isPlaying: playerState.isPlaying || playerState.shouldPlay,
         handleBackButtonAndroid,
     }
 };
