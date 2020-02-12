@@ -1,13 +1,7 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Audio } from "expo-av";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackNavigation } from "../../components/BackNavigation";
-import { NavigationInjectedProps } from "react-navigation";
-import { 
-    INTERRUPTION_MODE_IOS_DUCK_OTHERS, 
-    INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
-} from "expo-av/build/Audio";
 import { BackHandler } from 'react-native';
 import { useMeditationPlaylistPlayer } from "../../utilities/useMeditationPlaylist/useMeditationPlaylistPlayer";
 

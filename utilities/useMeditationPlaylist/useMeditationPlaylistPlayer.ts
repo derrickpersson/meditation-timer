@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useReducer } from "react";
 import { Audio } from "expo-av";
 import { 
     INTERRUPTION_MODE_IOS_DUCK_OTHERS, 
@@ -20,7 +20,48 @@ export const useMeditationPlaylistPlayer = ({
     interval,
     handleOnComplete,
 }: MediationPlayerOptions) => {
-    const [playerState, setPlayerState ] = useState({
+    const [playlist] = useState(new MeditationPlaylist(duration, interval));
+
+    const playerReducer = (state, action) => {
+        switch(action.type){
+            case "statusUpdate":
+                // const overflowSafePlaybackPosition = (state.isFinished || state.shouldPlay && !state.isPlaying) ? 0: action.payload.playbackInstancePosition;
+                // const derivedElapsedPlaytime = (state.elapsedPlaytime > state.sumOfPreviousPlaylistDurations + overflowSafePlaybackPosition) ?
+                //     state.elapsedPlaytime : state.sumOfPreviousPlaylistDurations + overflowSafePlaybackPosition;
+                // console.log("Payload: ", action.payload);
+                return {
+                    ...state,
+                    ...action.payload,
+                    elapsedPlaytime: state.sumOfPreviousPlaylistDurations + (action.payload.playbackInstancePosition || 0),
+                };
+            case "didJustFinish":
+                const loopCount = state.isLooping ? state.loopCount + 1: 0;
+                const targetLoopCount = playlist.getPlaylistItemInstruction(state.currentTrack).loopCount;
+                const sumOfPreviousPlaylistDurations = state.sumOfPreviousPlaylistDurations + action.payload.completedDuration;
+                const isFinished = state.currentTrack === playlist.getPlaylistLength() - 1;
+                const nextTrack = isFinished ? state.currentTrack: state.currentTrack + 1;
+
+                return {
+                    ...state,
+                    shouldPlay: !isFinished,
+                    sumOfPreviousPlaylistDurations,
+                    elapsedPlaytime: sumOfPreviousPlaylistDurations,
+                    currentTrack: state.isLooping ? state.currentTrack: nextTrack,
+                    isFinished: isFinished,
+                    loopCount: loopCount,
+                    isLooping: state.loopCount + 1 < targetLoopCount,
+                };
+            case "updateCurrentPlayState":
+                return {
+                    ...state,
+                    ...action.payload,
+                }
+            default:
+                return state;
+        }
+    }
+
+    const initialPlayerState = {
         playbackInstancePosition: null,
         playbackInstanceDuration: null,
         shouldPlay: false,
@@ -29,33 +70,36 @@ export const useMeditationPlaylistPlayer = ({
         isLoading: true,
         volume: 1.0,
         muted: false,
-    });
+        currentTrack: 0,
+        elapsedPlaytime: 0,
+        sumOfPreviousPlaylistDurations: 0,
+        isFinished: false,
+        isLooping: false,
+        loopCount: 0,
+    };
 
-    // const [elapsedPlaytime, setElapsedPlaytime] = useState(0);
-    const [isLooping, setIsLooping] = useState(false);
+    const [playerState, dispatch] = useReducer(playerReducer, initialPlayerState);
 
-    const playbackInstance: any = useRef();
-    const loopCount = useRef(0);
-    const currentTrack = useRef(0);
-    const sumOfPreviousPlaylistDurations = useRef(0);
-    const elapsedTime = useRef(0);
-
-    const [playlist] = useState(new MeditationPlaylist(duration, interval));
+    const playbackInstance: any = useRef(null);
 
     useEffect(() => {
-        loadAudioPlayer();
-        loadNewPlaybackInstance(playerState.isPlaying, currentTrack.current);
+        if(playerState.isFinished){
+            unloadPlaybackInstance(playbackInstance.current);
+            handleOnComplete();
+        } else {
+            loadAudioPlayer();
+            loadNewPlaybackInstance(playerState.shouldPlay, playerState.currentTrack);
+        }
         return () => unloadPlaybackInstance(playbackInstance.current);
-    }, []);
+    }, [playerState.currentTrack, playerState.isFinished, playerState.shouldPlay]);
 
-    // useEffect(() => {
-    //     setElapsedPlaytime(sumOfPreviousPlaylistDurations.current + playerState.playbackInstancePosition);
-    //     console.log("LoopCount: ", loopCount.current);
-    //     console.log("Current Track: ", currentTrack.current);
-    //     console.log("Sum: ", sumOfPreviousPlaylistDurations.current);
-    //     console.log("PlayerState: ", playerState);
-    //     console.log("ElapsedPlaytime: ", elapsedPlaytime);
-    // }, [playerState.playbackInstancePosition]);
+    useEffect(() => {
+        if(playbackInstance && playbackInstance.current){
+            if(!playerState.isLooping){
+                playbackInstance.current.setIsLoopingAsync(false);
+            }
+        }
+    }, [playerState.isLooping]);
 
     const loadAudioPlayer = async () => {
         const mode = {
@@ -78,12 +122,24 @@ export const useMeditationPlaylistPlayer = ({
     const pausePlayback = (callback?) => {
         playbackInstance.current.pauseAsync();
         const futureIsPlayingState = !playerState.isPlaying;
+        dispatch({
+            type: "updateCurrentPlayState",
+            payload: {
+                shouldPlay: false,
+            }
+        });
         callback(futureIsPlayingState);
     }
 
     const playPlayback = (callback?) => {
         playbackInstance.current.playAsync();
         const futureIsPlayingState = !playerState.isPlaying;
+        dispatch({
+            type: "updateCurrentPlayState",
+            payload: {
+                shouldPlay: true,
+            }
+        });
         callback(futureIsPlayingState);
     }
 
@@ -116,15 +172,6 @@ export const useMeditationPlaylistPlayer = ({
 
 
     const loadNewPlaybackInstance = async (playing, currentTrack) => {
-        if(playbackInstance.current && isLooping){
-            return playbackInstance.current;
-        }
-
-        if (playbackInstance.current != null) {
-            await playbackInstance.current.unloadAsync();
-            playbackInstance.current = null;
-        }
-
         const playlistItemInstruction = playlist.getPlaylistItemInstruction(currentTrack);
         const shouldLoop = playlistItemInstruction.loopCount > 0;
 
@@ -154,37 +201,26 @@ export const useMeditationPlaylistPlayer = ({
 
     const onPlaybackStatusUpdate = status => {
         if (status.isLoaded) {
-            setPlayerState({
-                isLoading: status.isLoading,
-                playbackInstancePosition: status.positionMillis,
-                playbackInstanceDuration: status.durationMillis,
-                shouldPlay: status.shouldPlay,
-                isPlaying: status.isPlaying,
-                isBuffering: status.isBuffering,
-                muted: status.isMuted,
-                volume: status.volume,
+            dispatch({
+                type: "statusUpdate",
+                payload: {
+                    isLoading: status.isLoading,
+                    playbackInstancePosition: status.positionMillis,
+                    playbackInstanceDuration: status.durationMillis,
+                    isPlaying: status.isPlaying,
+                    isBuffering: status.isBuffering,
+                    muted: status.isMuted,
+                    volume: status.volume,
+                    isLooping: status.isLooping,
+                },
             });
-            console.log("Adding properly? ", elapsedTime.current, status.positionMillis, sumOfPreviousPlaylistDurations.current, sumOfPreviousPlaylistDurations.current + status.positionMillis);
-            elapsedTime.current = sumOfPreviousPlaylistDurations.current + status.positionMillis;
             if (status.didJustFinish) {
-                sumOfPreviousPlaylistDurations.current = elapsedTime.current;
-                if(currentTrack.current === playlist.getPlaylistLength() - 1){
-                    handleOnComplete();
-                } else {
-                    if(status.isLooping){
-                        if(loopCount.current === playlist.getPlaylistItemInstruction(currentTrack.current).loopCount - 1){
-                            playbackInstance.current.setIsLoopingAsync(false);
-                            setIsLooping(false);
-                            loopCount.current = 0;
-                        } else {
-                            setIsLooping(true);
-                            loopCount.current = loopCount.current + 1;
-                        }
-                    } else {
-                        currentTrack.current = currentTrack.current + 1;
-                        loadNewPlaybackInstance(status.shouldPlay, currentTrack.current)
+                dispatch({
+                    type: "didJustFinish",
+                    payload: {
+                        completedDuration: status.durationMillis,
                     }
-                }
+                });
             }
         } else {
             if (status.error) {
@@ -197,7 +233,7 @@ export const useMeditationPlaylistPlayer = ({
         pausePlayback,
         playPlayback,
         handlePlayPause: onPlayPausePressed,
-        elapsedPlaytime: elapsedTime.current,
+        elapsedPlaytime: playerState.elapsedPlaytime,
         isPlaying: playerState.isPlaying || playerState.shouldPlay,
         handleBackButtonAndroid,
     }
