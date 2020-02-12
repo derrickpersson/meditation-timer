@@ -21,8 +21,7 @@ export class MeditationPlaylist implements IPlaylist {
         });
         this.playerInstructions.push({
             playlistItem: this.silence,
-            // loopCount: durationOfSilence,
-            loopCount: 2,
+            loopCount: durationOfSilence,
         });
         this.playerInstructions.push({
             playlistItem: this.bell,

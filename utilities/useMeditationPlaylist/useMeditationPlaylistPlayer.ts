@@ -24,15 +24,24 @@ export const useMeditationPlaylistPlayer = ({
 
     const playerReducer = (state, action) => {
         switch(action.type){
+            case "newTrackBuffering":
+                return {
+                    ...state,
+                    trackDidEnd: false,
+                    isPlaying: state.shouldPlay,
+                    elapsedPlaytime: state.sumOfPreviousPlaylistDurations,
+                };
+            case "resetTrackDidEnd":
+                return {
+                    ...state,
+                    trackDidEnd: false,
+                };
             case "statusUpdate":
-                // const overflowSafePlaybackPosition = (state.isFinished || state.shouldPlay && !state.isPlaying) ? 0: action.payload.playbackInstancePosition;
-                // const derivedElapsedPlaytime = (state.elapsedPlaytime > state.sumOfPreviousPlaylistDurations + overflowSafePlaybackPosition) ?
-                //     state.elapsedPlaytime : state.sumOfPreviousPlaylistDurations + overflowSafePlaybackPosition;
-                // console.log("Payload: ", action.payload);
+                const overflowSafePlaybackPosition = state.trackDidEnd ? 0: action.payload.playbackInstancePosition;
                 return {
                     ...state,
                     ...action.payload,
-                    elapsedPlaytime: state.sumOfPreviousPlaylistDurations + (action.payload.playbackInstancePosition || 0),
+                    elapsedPlaytime: state.sumOfPreviousPlaylistDurations + (overflowSafePlaybackPosition || 0),
                 };
             case "didJustFinish":
                 const loopCount = state.isLooping ? state.loopCount + 1: 0;
@@ -43,6 +52,7 @@ export const useMeditationPlaylistPlayer = ({
 
                 return {
                     ...state,
+                    trackDidEnd: true,
                     shouldPlay: !isFinished,
                     sumOfPreviousPlaylistDurations,
                     elapsedPlaytime: sumOfPreviousPlaylistDurations,
@@ -70,6 +80,7 @@ export const useMeditationPlaylistPlayer = ({
         isLoading: true,
         volume: 1.0,
         muted: false,
+        trackDidEnd: false,
         currentTrack: 0,
         elapsedPlaytime: 0,
         sumOfPreviousPlaylistDurations: 0,
@@ -84,13 +95,13 @@ export const useMeditationPlaylistPlayer = ({
 
     useEffect(() => {
         if(playerState.isFinished){
-            unloadPlaybackInstance(playbackInstance.current);
+            unloadPlaybackInstance();
             handleOnComplete();
         } else {
             loadAudioPlayer();
             loadNewPlaybackInstance(playerState.shouldPlay, playerState.currentTrack);
         }
-        return () => unloadPlaybackInstance(playbackInstance.current);
+        return () => unloadPlaybackInstance();
     }, [playerState.currentTrack, playerState.isFinished, playerState.shouldPlay]);
 
     useEffect(() => {
@@ -100,6 +111,14 @@ export const useMeditationPlaylistPlayer = ({
             }
         }
     }, [playerState.isLooping]);
+
+    useEffect(() => {
+        if(playerState.isLooping && playerState.trackDidEnd){
+            dispatch({
+                type: "resetTrackDidEnd",
+            });
+        }
+    }, [playerState.isLooping, playerState.trackDidEnd ,playerState.loopCount]);
 
     const loadAudioPlayer = async () => {
         const mode = {
@@ -125,7 +144,7 @@ export const useMeditationPlaylistPlayer = ({
         dispatch({
             type: "updateCurrentPlayState",
             payload: {
-                shouldPlay: false,
+                isPlaying: false,
             }
         });
         callback(futureIsPlayingState);
@@ -137,7 +156,7 @@ export const useMeditationPlaylistPlayer = ({
         dispatch({
             type: "updateCurrentPlayState",
             payload: {
-                shouldPlay: true,
+                isPlaying: true,
             }
         });
         callback(futureIsPlayingState);
@@ -163,9 +182,10 @@ export const useMeditationPlaylistPlayer = ({
         }
     };
 
-    const unloadPlaybackInstance = async (playbackInstance) => {
-        if (playbackInstance != null) {
-            await playbackInstance.unloadAsync();
+    const unloadPlaybackInstance = async () => {
+        if (playbackInstance.current != null) {
+            await playbackInstance.current.setOnPlaybackStatusUpdate(null);
+            await playbackInstance.current.unloadAsync();
             playbackInstance.current = null;
         }
     }
@@ -200,31 +220,37 @@ export const useMeditationPlaylistPlayer = ({
     }
 
     const onPlaybackStatusUpdate = status => {
-        if (status.isLoaded) {
+        if(status.isBuffering){
             dispatch({
-                type: "statusUpdate",
-                payload: {
-                    isLoading: status.isLoading,
-                    playbackInstancePosition: status.positionMillis,
-                    playbackInstanceDuration: status.durationMillis,
-                    isPlaying: status.isPlaying,
-                    isBuffering: status.isBuffering,
-                    muted: status.isMuted,
-                    volume: status.volume,
-                    isLooping: status.isLooping,
-                },
+                type: "newTrackBuffering",
             });
-            if (status.didJustFinish) {
-                dispatch({
-                    type: "didJustFinish",
-                    payload: {
-                        completedDuration: status.durationMillis,
-                    }
-                });
-            }
         } else {
-            if (status.error) {
-                console.log(`FATAL PLAYER ERROR: ${status.error}`);
+            if (status.isLoaded) {
+                dispatch({
+                    type: "statusUpdate",
+                    payload: {
+                        isLoading: status.isLoading,
+                        playbackInstancePosition: status.positionMillis,
+                        playbackInstanceDuration: status.durationMillis,
+                        isPlaying: status.isPlaying,
+                        isBuffering: status.isBuffering,
+                        muted: status.isMuted,
+                        volume: status.volume,
+                        isLooping: status.isLooping,
+                    },
+                });
+                if (status.didJustFinish) {
+                    dispatch({
+                        type: "didJustFinish",
+                        payload: {
+                            completedDuration: status.durationMillis,
+                        }
+                    });
+                }
+            } else {
+                if (status.error) {
+                    console.log(`FATAL PLAYER ERROR: ${status.error}`);
+                }
             }
         }
     };
@@ -234,7 +260,7 @@ export const useMeditationPlaylistPlayer = ({
         playPlayback,
         handlePlayPause: onPlayPausePressed,
         elapsedPlaytime: playerState.elapsedPlaytime,
-        isPlaying: playerState.isPlaying || playerState.shouldPlay,
+        isPlaying: playerState.isPlaying || (playerState.trackDidEnd && playerState.shouldPlay),
         handleBackButtonAndroid,
     }
 };
