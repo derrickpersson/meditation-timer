@@ -4,3 +4,4 @@ export { default as OpenQuotationMark } from "./OpenQuotationMark";
 export { default as CloseQuotationMark } from "./CloseQuotationMark";
 export { default as MeditationHighlightsDivider } from "./MeditationHighlightsDivider";
 export { default as Ex } from "./Ex"; 
+export { default as SettingsGear } from "./SettingsGear";

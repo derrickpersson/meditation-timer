@@ -1,16 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
-import { OpenQuotationMark, CloseQuotationMark, MeditationHighlightsDivider } from '../../components';
-import { Button } from '../../components/Button';
+import { View, Text, StyleSheet, StatusBar, Switch } from 'react-native';
+import { MeditationHighlightsDivider } from '../../components';
 import { asyncStorageMeditationSessionRepository, MeditationRecords } from '../../utilities/MeditationSessionRepository';
 import { meditationAnalysisService } from '../../utilities/MeditationAnalysisService';
-import { Quote, quotationService } from '../../utilities/QuotationService';
 import { FooterButton } from '../../components/FooterButton/FooterButton';
 import { QuotationDisplay } from '../../components/QuotationDisplay';
 import { numberFormatter } from '../../utilities';
+import { ThemeAwareView } from '../../components/ThemeAwareView';
+import withTheme, { InjectedThemeProps } from '../../utilities/Styles/withTheme';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { SettingsGear } from '../../components/SvgIcons/SettingsGear';
 
 export interface Props {
   navigation: any;
+  theme: InjectedThemeProps;
 }
 
 export interface State {
@@ -19,7 +22,7 @@ export interface State {
   totalMinutes: number;
 }
 
-class HomeScreen extends React.Component<Props, State> {
+export class HomeScreen extends React.Component<Props, State> {
   static navigationOptions = {
     header: null
   }
@@ -50,24 +53,28 @@ class HomeScreen extends React.Component<Props, State> {
   }
 
   public render() {
-  
     return (
-    <View style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
+    <ThemeAwareView style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
       <StatusBar barStyle="light-content" />
       <View style={styles.meditationHighlightsContainer}>
-        <Text style={[styles.meditationStatsHeader, styles.whiteText]}>Your practice</Text>
+        <View style={styles.meditationHighlighsHeaderContainer}>
+          <Text style={[styles.meditationStatsHeader, styles.lightText]}>Your practice</Text>
+          <TouchableOpacity onPress={() => this.props.navigation.push('Settings')}>
+            <SettingsGear width={"35px"} height={"35px"} fill={"#FFFFFF"}/>
+          </TouchableOpacity>
+        </View>
         <View style={styles.meditationStatsContainer}>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.weeklyMinutes)}</Text>
-            <Text style={[styles.subheadingText, styles.whiteText]}>minutes this week</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(this.state.weeklyMinutes)}</Text>
+            <Text style={[styles.subheadingText, styles.lightText]}>minutes this week</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.dayStreak)}</Text>
-            <Text style={[styles.subheadingText, styles.whiteText]}>day streak</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(this.state.dayStreak)}</Text>
+            <Text style={[styles.subheadingText, styles.lightText]}>day streak</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.totalMinutes)}</Text>
-            <Text style={[styles.subheadingText, styles.whiteText]}>minutes total</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(this.state.totalMinutes)}</Text>
+            <Text style={[styles.subheadingText, styles.lightText]}>minutes total</Text>
           </View>
         </View>
       </View>
@@ -79,7 +86,7 @@ class HomeScreen extends React.Component<Props, State> {
           content="Meditate"
           onPress={() => this.props.navigation.push('MeditationSelection')}
         />
-    </View>)
+    </ThemeAwareView>)
   }
 
   private async fetchData() {
@@ -102,6 +109,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     width: "100%",
   },
+  meditationHighlighsHeaderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
   meditationStatsContainer: {
     flex: 1,
     flexDirection: "row",
@@ -115,7 +126,7 @@ const styles = StyleSheet.create({
   individualStatsContainer: {
     flex: 1,
   },
-  whiteText: {
+  lightText: {
     color: "#FFF",
   },
   headingText: {
@@ -137,4 +148,7 @@ const styles = StyleSheet.create({
   },
 })
 
-export default HomeScreen;
+const withThemeHomeScreen = withTheme(HomeScreen);
+withThemeHomeScreen.navigationOptions = { header: null };
+
+export default withThemeHomeScreen;

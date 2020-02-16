@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Text, StyleSheet } from "react-native";
+import { ThemeAwareText } from "../../../components/ThemeAwareText";
 
 interface Props {
     handleSelection: (value: string) => void;
@@ -20,7 +21,7 @@ export const IntentionSelection: FC<Props> = ({
         style={styles.intentionContainer}
     >
         <SVGIcon colour={isSelected ? "#4464FF" : false}/>
-        <Text>{value.toUpperCase()}</Text>
+        <ThemeAwareText>{value.toUpperCase()}</ThemeAwareText>
     </TouchableOpacity>
 );
 

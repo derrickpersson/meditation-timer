@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import { Text } from "react-native";
-import { HomeScreen, MeditationSelectionScreen, MeditationScreen, MeditationSuccessScreen } from "./screens";
+import { Text, View } from "react-native";
+import { HomeScreen, MeditationSelectionScreen, MeditationScreen, MeditationSuccessScreen, SettingsScreen } from "./screens";
+import { handleFontScaling } from './utilities/Styles';
+import { useTheme, themeContext } from "./utilities/Styles/theme";
+import { themeColors } from "./utilities/Styles/themeColors";
+import { HeaderBackground } from './components/HeaderBackground';
 
 const MainNavigator = createStackNavigator(
   {
@@ -17,6 +21,9 @@ const MainNavigator = createStackNavigator(
     },
     MeditationSuccess: {
       screen: MeditationSuccessScreen,
+    },
+    Settings: {
+      screen: SettingsScreen,
     }
   },
   {
@@ -27,23 +34,46 @@ const MainNavigator = createStackNavigator(
         borderBottomWidth: 0,
         elevation: 0,
       },
+      headerTransparent: true,
+      headerBackground: HeaderBackground,
     },
   }
 );
 
 const AppContainer = createAppContainer(MainNavigator);
 
-class App extends React.Component {
-  public constructor(props){
-    super(props);
-    if (Text.defaultProps == null) Text.defaultProps = {};
-    Text.defaultProps.allowFontScaling = true;
-    Text.defaultProps.maxFontSizeMultiplier = 1.25;
+const App = () => {
+  useEffect(() => {
+    handleFontScaling();
+  }, []);
+
+  const {
+    themeState, 
+    setThemeState,
+  } = useTheme();
+
+  const toggle = () => setThemeState({
+    ...themeState,
+    theme: {
+      type: themeState.theme.type === "light" ? "dark": "light"
+    },
+  });
+
+  const calculatedThemeColors = themeColors(themeState.theme.type);
+
+  if(!themeState.hasThemeMounted){
+    return <View><Text>LOADING</Text></View>
   }
 
-  public render() {
-    return (<AppContainer />);
-  }
+  return (
+    <themeContext.Provider value={{
+      theme: themeState.theme,
+      themeColors: calculatedThemeColors,
+      toggle,
+    }}>
+        <AppContainer />
+    </themeContext.Provider>
+  );
 }
 
 export default App;

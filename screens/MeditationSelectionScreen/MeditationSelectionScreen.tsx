@@ -8,9 +8,11 @@ import GrattitudeCircle from "../../components/SvgIcons/GrattitudeCircle";
 import HeartCircle from "../../components/SvgIcons/HeartCircle";
 import BalanceCircle from "../../components/SvgIcons/BalanceCircle";
 import { IntentionSelection } from "./IntentionSelection";
+import { ThemeAwareView } from "../../components/ThemeAwareView";
+import { ThemeAwareText } from "../../components/ThemeAwareText";
 
 class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
-    static navigationOptions = ( { navigation }) => ({
+    static navigationOptions = ({ navigation }) => ({
         headerLeft: () => <BackNavigation navigation={navigation} />,
     });
 
@@ -39,9 +41,9 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     const maxSelected = this.state.selectedDuration === (this.durationOptions.length - 1);
 
     return (
-            <View style={styles.screenContainer}>
+            <ThemeAwareView style={styles.screenContainer}>
                 <View style={styles.headingTextContainer}>
-                    <Text style={styles.headingText}>{this.state.instructionText}</Text>
+                    <ThemeAwareText style={styles.headingText}>{this.state.instructionText}</ThemeAwareText>
                 </View>
                 <View style={styles.selectionContainer}>
                     <TouchableOpacity
@@ -59,10 +61,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
 
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.durationDisplay}>{duration}</Text>
+                            <ThemeAwareText style={styles.durationDisplay}>{duration}</ThemeAwareText>
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.durationUnitText}>minutes</Text>
+                            <ThemeAwareText style={styles.durationUnitText}>minutes</ThemeAwareText>
                         </View>
                     </View>
                     <TouchableOpacity
@@ -77,7 +79,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.headingTextContainer}>
-                    <Text style={styles.headingText}>Set today's intention</Text>
+                    <ThemeAwareText style={styles.headingText}>Set today's intention</ThemeAwareText>
                 </View>
                 <View style={styles.intentionContainer}>
                     <IntentionSelection
@@ -107,7 +109,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                         intention: this.state.selectedIntention,
                      })}
                 />
-            </View>
+            </ThemeAwareView>
     )}
 
     private getInstructionText() {
