@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackNavigation } from "../../components/BackNavigation";
 import { BackHandler } from 'react-native';
-import { useMeditationPlaylistPlayer } from "../../utilities/useMeditationPlaylist/useMeditationPlaylistPlayer";
+import { useMeditationPlaylistPlayer } from "../../utilities/useMeditationPlaylist";
 
 export interface State {
     playbackInstancePosition: number | null;

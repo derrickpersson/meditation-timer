@@ -196,3 +196,5 @@ export const useMeditationPlaylistPlayer = ({
         handleBackButtonAndroid,
     }
 };
+
+export default useMeditationPlaylistPlayer;
