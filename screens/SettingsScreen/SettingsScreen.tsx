@@ -1,19 +1,18 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
-import { ThemeAwareView } from "../../components/ThemeAwareView";
-import { ThemeAwareText } from "../../components/ThemeAwareText";
+import { StyleSheet, View } from "react-native";
 import { SettingsItem } from "./SettingsItem";
 import withTheme from "../../utilities/Styles/withTheme";
+import { ThemeAwareView } from "../../components/ThemeAwareView";
+import { ThemeAwareText } from "../../components/ThemeAwareText";
 
 export const SettingsScreen = ({
     theme,
 }) => (
     <ThemeAwareView style={styles.settingsScreenContainer}>
         <View style={styles.settingsScreenHeaderContainer}>
-            <ThemeAwareText style={styles.settingsScreenHeader}>Settings</ThemeAwareText>
             <SettingsItem 
                 name={"Dark Mode"}
-                Icon={() => <View><Text>Turn to {theme.theme.type === "dark" ? "light": "dark"}</Text></View>}
+                Icon={() => <View><ThemeAwareText>Turn to {theme.theme.type === "dark" ? "light": "dark"}</ThemeAwareText></View>}
                 handleOnPress={theme.toggle}
             />
         </View>
@@ -24,7 +23,6 @@ const styles = StyleSheet.create({
     settingsScreenContainer: {
         flex: 1,
         paddingHorizontal: 16,
-        marginTop: 80,
     },
     settingsScreenHeaderContainer: {
         flex: 1,

@@ -23,15 +23,6 @@ export interface State {
 
 class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
     private playbackInstance: any;
-    static navigationOptions = ( { navigation }) => ({
-        headerLeft: () => <BackNavigation navigation={navigation} hideBackButton={navigation.getParam('isPlaying')} />,
-        title: `${navigation.getParam('duration')} minute meditation`,
-        headerTitleStyle: {
-          fontWeight: '100',
-          paddingTop: 25,
-          paddingHorizontal: 25,
-        },
-    });
 
     constructor(props) {
         super(props);
@@ -109,7 +100,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, State> {
             this.playbackInstance = null;
         }
 
-        const duration = this.props.navigation.state.params.duration;
+        const duration = this.props.navigation.route.params.duration;
 
         const mediationFiles = {
             "3": require(`./media/3-minute-meditation.mp3`),

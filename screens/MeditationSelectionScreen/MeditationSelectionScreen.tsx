@@ -10,6 +10,7 @@ import BalanceCircle from "../../components/SvgIcons/BalanceCircle";
 import { IntentionSelection } from "./IntentionSelection";
 import { ThemeAwareView } from "../../components/ThemeAwareView";
 import { ThemeAwareText } from "../../components/ThemeAwareText";
+import { ScreenContainerView } from "../../components/ScreenContainerView";
 
 class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     static navigationOptions = ({ navigation }) => ({
@@ -41,7 +42,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     const maxSelected = this.state.selectedDuration === (this.durationOptions.length - 1);
 
     return (
-            <ThemeAwareView style={styles.screenContainer}>
+            <ScreenContainerView style={styles.screenContainer}>
                 <View style={styles.headingTextContainer}>
                     <ThemeAwareText style={styles.headingText}>{this.state.instructionText}</ThemeAwareText>
                 </View>
@@ -109,7 +110,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                         intention: this.state.selectedIntention,
                      })}
                 />
-            </ThemeAwareView>
+            </ScreenContainerView>
     )}
 
     private getInstructionText() {
