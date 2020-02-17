@@ -12,20 +12,49 @@ import { ThemeAwareView } from "../../components/ThemeAwareView";
 import { ThemeAwareText } from "../../components/ThemeAwareText";
 import { ScreenContainerView } from "../../components/ScreenContainerView";
 
+const MAX_DURATION = 60;
+const MIN_DURATION = 1;
+
 class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     static navigationOptions = ({ navigation }) => ({
         headerLeft: () => <BackNavigation navigation={navigation} />,
     });
 
-    private durationOptions = [3, 5, 10, 15, 20, 30];
+    private interval;
 
     public constructor(props){
         super(props);
         this.state = {
-            selectedDuration: 2,
+            selectedDuration: 10,
             instructionText: "",
             selectedIntention: "",
         };
+    }
+
+    private handleIncreaseSelection = (event) => {
+        this.setState({
+            selectedDuration: this.state.selectedDuration === MAX_DURATION ? MAX_DURATION: this.state.selectedDuration + 1,
+        });
+        this.interval = setInterval(() => {
+            this.setState({
+                selectedDuration: this.state.selectedDuration === MAX_DURATION ? MAX_DURATION: this.state.selectedDuration + 1,
+            });
+        }, 250);
+    }
+
+    private handleDeselection = (event) => {
+        clearInterval(this.interval);
+    }
+
+    private handleDecreaseSelection = (event) => {
+        this.setState({
+            selectedDuration: this.state.selectedDuration === MIN_DURATION ? MIN_DURATION : this.state.selectedDuration - 1,
+        });
+        this.interval = setInterval(() => {
+            this.setState({
+                selectedDuration: this.state.selectedDuration === MIN_DURATION ? MIN_DURATION : this.state.selectedDuration - 1,
+            });
+        }, 250);
     }
 
     public componentDidMount(){
@@ -36,10 +65,9 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     }
 
     public render() {
-    const duration = this.durationOptions[this.state.selectedDuration];
 
-    const minSelected = this.state.selectedDuration === 0;
-    const maxSelected = this.state.selectedDuration === (this.durationOptions.length - 1);
+    const minSelected = this.state.selectedDuration === MIN_DURATION;
+    const maxSelected = this.state.selectedDuration === MAX_DURATION;
 
     return (
             <ScreenContainerView style={styles.screenContainer}>
@@ -49,11 +77,8 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                 <View style={styles.selectionContainer}>
                     <TouchableOpacity
                         style={[styles.upArrowContainer]}
-                        onPress={() => {
-                            this.setState({
-                                selectedDuration: this.state.selectedDuration === (this.durationOptions.length - 1) ? (this.durationOptions.length - 1) : this.state.selectedDuration + 1,
-                            });
-                        }}
+                        onPressIn={this.handleIncreaseSelection}
+                        onPressOut={this.handleDeselection}
                     >
                         <UpArrow style={maxSelected ? styles.disabledArrow: styles.enabledArrow}/>
                     </TouchableOpacity>
@@ -62,19 +87,17 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
 
                         </View>
                         <View style={{ flex: 1 }}>
-                            <ThemeAwareText style={styles.durationDisplay}>{duration}</ThemeAwareText>
+                            <ThemeAwareText style={styles.durationDisplay}>{this.state.selectedDuration}</ThemeAwareText>
                         </View>
                         <View style={{ flex: 1 }}>
-                            <ThemeAwareText style={styles.durationUnitText}>minutes</ThemeAwareText>
+                            <ThemeAwareText style={styles.durationUnitText}>{this.state.selectedDuration === 1 ?
+                                "minute" : "minutes"}</ThemeAwareText>
                         </View>
                     </View>
                     <TouchableOpacity
                         style={[styles.downArrow]}
-                        onPress={() => {
-                            this.setState({
-                                selectedDuration: this.state.selectedDuration === 0 ? 0 : this.state.selectedDuration - 1,
-                            });
-                        }}
+                        onPressIn={this.handleDecreaseSelection}
+                        onPressOut={this.handleDeselection}
                     >
                         <DownArrow style={minSelected ? styles.disabledArrow: styles.enabledArrow}/>
                     </TouchableOpacity>
@@ -106,7 +129,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                 <FooterButton
                     content="Set Meditation"
                     onPress={() => this.props.navigation.navigate('Meditation', { 
-                        duration,
+                        duration: this.state.selectedDuration,
                         intention: this.state.selectedIntention,
                      })}
                 />
