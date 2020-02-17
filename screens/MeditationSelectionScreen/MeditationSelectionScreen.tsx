@@ -9,49 +9,20 @@ import HeartCircle from "../../components/SvgIcons/HeartCircle";
 import BalanceCircle from "../../components/SvgIcons/BalanceCircle";
 import { IntentionSelection } from "./IntentionSelection";
 
-const MAX_DURATION = 60;
-const MIN_DURATION = 1;
-
 class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     static navigationOptions = ( { navigation }) => ({
         headerLeft: () => <BackNavigation navigation={navigation} />,
     });
 
-    private interval;
+    private durationOptions = [3, 5, 10, 15, 20, 30];
 
     public constructor(props){
         super(props);
         this.state = {
-            selectedDuration: 10,
+            selectedDuration: 2,
             instructionText: "",
             selectedIntention: "",
         };
-    }
-
-    private handleIncreaseSelection = (event) => {
-        this.setState({
-            selectedDuration: this.state.selectedDuration === MAX_DURATION ? MAX_DURATION: this.state.selectedDuration + 1,
-        });
-        this.interval = setInterval(() => {
-            this.setState({
-                selectedDuration: this.state.selectedDuration === MAX_DURATION ? MAX_DURATION: this.state.selectedDuration + 1,
-            });
-        }, 250);
-    }
-
-    private handleDeselection = (event) => {
-        clearInterval(this.interval);
-    }
-
-    private handleDecreaseSelection = (event) => {
-        this.setState({
-            selectedDuration: this.state.selectedDuration === MIN_DURATION ? MIN_DURATION : this.state.selectedDuration - 1,
-        });
-        this.interval = setInterval(() => {
-            this.setState({
-                selectedDuration: this.state.selectedDuration === MIN_DURATION ? MIN_DURATION : this.state.selectedDuration - 1,
-            });
-        }, 250);
     }
 
     public componentDidMount(){
@@ -62,9 +33,10 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
     }
 
     public render() {
+    const duration = this.durationOptions[this.state.selectedDuration];
 
-    const minSelected = this.state.selectedDuration === MIN_DURATION;
-    const maxSelected = this.state.selectedDuration === MAX_DURATION;
+    const minSelected = this.state.selectedDuration === 0;
+    const maxSelected = this.state.selectedDuration === (this.durationOptions.length - 1);
 
     return (
             <View style={styles.screenContainer}>
@@ -74,8 +46,11 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                 <View style={styles.selectionContainer}>
                     <TouchableOpacity
                         style={[styles.upArrowContainer]}
-                        onPressIn={this.handleIncreaseSelection}
-                        onPressOut={this.handleDeselection}
+                        onPress={() => {
+                            this.setState({
+                                selectedDuration: this.state.selectedDuration === (this.durationOptions.length - 1) ? (this.durationOptions.length - 1) : this.state.selectedDuration + 1,
+                            });
+                        }}
                     >
                         <UpArrow style={maxSelected ? styles.disabledArrow: styles.enabledArrow}/>
                     </TouchableOpacity>
@@ -84,17 +59,19 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
 
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.durationDisplay}>{this.state.selectedDuration}</Text>
+                            <Text style={styles.durationDisplay}>{duration}</Text>
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.durationUnitText}>{this.state.selectedDuration === 1 ?
-                                "minute" : "minutes"}</Text>
+                            <Text style={styles.durationUnitText}>minutes</Text>
                         </View>
                     </View>
                     <TouchableOpacity
                         style={[styles.downArrow]}
-                        onPressIn={this.handleDecreaseSelection}
-                        onPressOut={this.handleDeselection}
+                        onPress={() => {
+                            this.setState({
+                                selectedDuration: this.state.selectedDuration === 0 ? 0 : this.state.selectedDuration - 1,
+                            });
+                        }}
                     >
                         <DownArrow style={minSelected ? styles.disabledArrow: styles.enabledArrow}/>
                     </TouchableOpacity>
@@ -126,7 +103,7 @@ class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
                 <FooterButton
                     content="Set Meditation"
                     onPress={() => this.props.navigation.navigate('Meditation', { 
-                        duration: this.state.selectedDuration,
+                        duration,
                         intention: this.state.selectedIntention,
                      })}
                 />
