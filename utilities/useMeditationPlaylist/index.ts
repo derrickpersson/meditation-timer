@@ -14,3 +14,5 @@ export interface IPlaylist {
     getPlaylistItemInstruction: (index) => PlayerInstruction;
     getPlaylistLength: () => number;
 }
+
+export { default as useMeditationPlaylistPlayer } from "./useMeditationPlaylistPlayer";
