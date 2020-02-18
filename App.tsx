@@ -2,9 +2,22 @@ import React, { useEffect } from 'react';
 import { Text, View } from "react-native";
 import { handleFontScaling } from './utilities/Styles';
 import { useTheme, themeContext } from "./utilities/Styles/theme";
-import { themeColors } from "./utilities/Styles/themeColors";
-import { NavigationContainer } from '@react-navigation/native'
+import { themeColors, colorPalette } from "./utilities/Styles/themeColors";
+import { 
+  NavigationContainer,
+  DarkTheme,
+  DefaultTheme, 
+} from '@react-navigation/native'
 import { MainNavigator } from './components/MainNavigator';
+
+const MyDarkTheme = {
+  dark: true,
+  colors: {
+    ...DarkTheme.colors,
+    background: colorPalette.darkBackground,
+    card: colorPalette.darkBackground,
+  }
+}
 
 const App = () => {
   useEffect(() => {
@@ -35,7 +48,9 @@ const App = () => {
       themeColors: calculatedThemeColors,
       toggle,
     }}>
-        <NavigationContainer>
+        <NavigationContainer
+          theme={themeState.theme.type === "dark" ? MyDarkTheme: DefaultTheme }
+        >
           <MainNavigator />
         </NavigationContainer>
     </themeContext.Provider>

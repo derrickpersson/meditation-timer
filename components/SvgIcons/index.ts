@@ -5,3 +5,5 @@ export { default as CloseQuotationMark } from "./CloseQuotationMark";
 export { default as MeditationHighlightsDivider } from "./MeditationHighlightsDivider";
 export { default as Ex } from "./Ex"; 
 export { default as SettingsGear } from "./SettingsGear";
+export { default as Sun } from "./Sun";
+export { default as Moon } from "./Moon";

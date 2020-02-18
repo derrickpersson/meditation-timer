@@ -17,10 +17,10 @@ export const SettingsItem = ({
 
 const styles = StyleSheet.create({
     settingsItemContainer: {
-        flex: 1,
         flexDirection: "row",
         justifyContent: "space-between",
         marginVertical: 24,
+        alignItems: "center",
     },
     settingsItemTitleText: {
         fontSize: 18,

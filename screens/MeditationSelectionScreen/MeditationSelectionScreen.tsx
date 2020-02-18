@@ -1,21 +1,26 @@
 import React from "react";
-import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { DownArrow, UpArrow } from "../../components/SvgIcons";
-import { NavigationInjectedProps } from "react-navigation";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackNavigation } from "../../components/BackNavigation";
 import GrattitudeCircle from "../../components/SvgIcons/GrattitudeCircle";
 import HeartCircle from "../../components/SvgIcons/HeartCircle";
 import BalanceCircle from "../../components/SvgIcons/BalanceCircle";
 import { IntentionSelection } from "./IntentionSelection";
-import { ThemeAwareView } from "../../components/ThemeAwareView";
 import { ThemeAwareText } from "../../components/ThemeAwareText";
 import { ScreenContainerView } from "../../components/ScreenContainerView";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { MainNavigatorParamList } from "../../components/MainNavigator";
 
 const MAX_DURATION = 60;
 const MIN_DURATION = 1;
 
-class MeditationScreen extends React.Component<NavigationInjectedProps, any> {
+
+type InjectedNavigationProp = {
+    navigation: StackNavigationProp<MainNavigatorParamList, 'MeditationSelection'>;
+};
+
+class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
     static navigationOptions = ({ navigation }) => ({
         headerLeft: () => <BackNavigation navigation={navigation} />,
     });

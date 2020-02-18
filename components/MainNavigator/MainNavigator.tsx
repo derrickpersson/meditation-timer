@@ -4,10 +4,24 @@ import { HomeScreen, MeditationSelectionScreen, MeditationScreen, MeditationSucc
 import { HeaderBackground } from "../HeaderBackground";
 import { BackNavigation } from "../BackNavigation";
 
-const MainStack = createStackNavigator();
+export type MainNavigatorParamList = {
+    Home: undefined;
+    MeditationSelection: { duration: number };
+    MeditationSuccess: { 
+        duration: number,
+        intention: string,
+    };
+    Meditation: { 
+        duration: number,
+        intention: string,
+    };
+    Settings: undefined;
+}
+
+const MainStack = createStackNavigator<MainNavigatorParamList>();
 
 const navigationProps = {
-    initialRouteName: 'Home',
+    initialRouteName: 'Home' as MainNavigatorParamList["Home"],
 };
 
 const headerStyle = {

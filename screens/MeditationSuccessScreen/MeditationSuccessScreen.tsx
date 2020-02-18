@@ -5,7 +5,12 @@ import { meditationAnalysisService } from "../../utilities/MeditationAnalysisSer
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import AnimateNumber from "react-native-animate-number";
 import { numberFormatter } from "../../utilities/numberFormatter";
-import { NavigationInjectedProps } from "react-navigation";
+import { ScreenContainerView } from "../../components/ScreenContainerView";
+import { MainNavigatorParamList } from "../../components/MainNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
+import { ThemeAwareText } from "../../components/ThemeAwareText";
+import withTheme, { InjectedThemeProps } from "../../utilities/Styles/withTheme";
 
 export interface State {
     totalMinutes: number;
@@ -13,7 +18,13 @@ export interface State {
     weeklyMinutes: number;
 }
 
-export class MeditationSuccessScreen extends React.Component<NavigationInjectedProps, State> {
+export type Prop = {
+    route: RouteProp<MainNavigatorParamList, 'MeditationSuccess'>,
+    navigation: StackNavigationProp<MainNavigatorParamList, 'MeditationSuccess'>,
+    theme: InjectedThemeProps,
+}
+
+export class MeditationSuccessScreen extends React.Component<Prop, State> {
     static navigationOptions = {
         header: null,
     }
@@ -39,8 +50,8 @@ export class MeditationSuccessScreen extends React.Component<NavigationInjectedP
             dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
         }, async () => {
             await asyncStorageMeditationSessionRepository.createMeditationSession({
-                duration: this.props.navigation.state.params && this.props.navigation.state.params.duration,
-                intention: this.props.navigation.state.params && this.props.navigation.state.params.intention,
+                duration: this.props.route.params && this.props.route.params.duration,
+                intention: this.props.route.params && this.props.route.params.intention,
                 createdDate: new Date(),
             });
             const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
@@ -58,41 +69,41 @@ export class MeditationSuccessScreen extends React.Component<NavigationInjectedP
 
         const animatedNumberSettings = {
             formatter: numberFormatter,
-            style: styles.headingText,
+            style: [styles.headingText, this.props.theme.themeColors.defaultText],
             timing: "easeIn",
             countBy: 1
         }
 
         return (
-            <View style={styles.screenContainer}>
+            <ScreenContainerView style={styles.screenContainer}>
                 <View style={styles.footerSpacer}></View>                
                 <View style={styles.individualStatsContainer}>
                     {!!this.state.dayStreak && <AnimateNumber 
                         value={this.state.dayStreak || 0}
                         {...animatedNumberSettings}
                     />}
-                    <Text style={styles.subheadingText}>day streak</Text>
+                    <ThemeAwareText style={styles.subheadingText}>day streak</ThemeAwareText>
                 </View>
                 <View style={styles.individualStatsContainer}>
                     {!!this.state.weeklyMinutes && <AnimateNumber 
                         value={this.state.weeklyMinutes || 0} 
                         {...animatedNumberSettings}
                     />}
-                    <Text style={styles.subheadingText}>minutes this week</Text>
+                    <ThemeAwareText style={styles.subheadingText}>minutes this week</ThemeAwareText>
                 </View>
                 <View style={styles.individualStatsContainer}>
                     {!!this.state.totalMinutes && <AnimateNumber 
                         value={this.state.totalMinutes || 0} 
                         {...animatedNumberSettings}
                     />}
-                    <Text style={styles.subheadingText}>minutes total</Text>
+                    <ThemeAwareText style={styles.subheadingText}>minutes total</ThemeAwareText>
                 </View>
                 <View style={styles.footerSpacer}></View>
                 <FooterButton
                     content="Finish"
                     onPress={() => (this.props.navigation as any).popToTop()}
                 />
-            </View>
+            </ScreenContainerView>
         )
     }
 }
@@ -119,4 +130,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default MeditationSuccessScreen;
+export default withTheme(MeditationSuccessScreen);

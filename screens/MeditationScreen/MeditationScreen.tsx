@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
-import { BackNavigation } from "../../components/BackNavigation";
 import { BackHandler } from 'react-native';
 import { useMeditationPlaylistPlayer } from "../../utilities/useMeditationPlaylist";
+import { ScreenContainerView } from "../../components/ScreenContainerView";
+import { ThemeAwareText } from "../../components/ThemeAwareText";
 
 export interface State {
     playbackInstancePosition: number | null;
@@ -22,11 +23,12 @@ export interface State {
 
 export const MeditationScreen = ({
     navigation,
+    route,
 }) => {
     const completeMeditation = () => {
         navigation.navigate('MeditationSuccess', {
-            duration: navigation.state.params && navigation.state.params.duration,
-            intention: navigation.state.params && navigation.state.params.intention,
+            duration: route.params && route.params.duration,
+            intention: route.params && route.params.intention,
         });
     }
 
@@ -36,7 +38,7 @@ export const MeditationScreen = ({
         elapsedPlaytime,
         handleBackButtonAndroid,
     } = useMeditationPlaylistPlayer({
-        duration: navigation.state.params.duration,
+        duration: route.params.duration,
         handleOnComplete: completeMeditation,
     });
 
@@ -80,29 +82,19 @@ export const MeditationScreen = ({
     }, []);
 
     return (
-        <View style={styles.screenContainer}>
+        <ScreenContainerView style={styles.screenContainer}>
             <View style={styles.timerDisplayContainer}>
-                <Text style={[styles.timerDisplay, !isPlaying ? styles.pausedTimerDisplay: {}]}>{getMMSSFromMillis(elapsedPlaytime)}</Text>
+                <ThemeAwareText style={[styles.timerDisplay, !isPlaying ? styles.pausedTimerDisplay: {}]}>{getMMSSFromMillis(elapsedPlaytime)}</ThemeAwareText>
             </View>
             <View style={styles.footerSpacer}></View>
             <FooterButton
                 onPress={handleOnPressPlayPause}
-                // onLongPress={this.completeMeditation}
+                onLongPress={completeMeditation}
                 content={isPlaying ? "Pause" : "Play"}
             />
-        </View>
+        </ScreenContainerView>
     )
 }
-
-MeditationScreen.navigationOptions = ( { navigation }) => ({
-    headerLeft: () => <BackNavigation navigation={navigation} hideBackButton={navigation.getParam('isPlaying')} />,
-    title: `${navigation.getParam('duration')} minute meditation`,
-    headerTitleStyle: {
-        fontWeight: '100',
-        paddingTop: 25,
-        paddingHorizontal: 25,
-    },
-});
 
 const styles = StyleSheet.create({
     screenContainer: {

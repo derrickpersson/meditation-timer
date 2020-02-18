@@ -44,6 +44,7 @@ export class HomeScreen extends React.Component<Props, State> {
       'didFocus',
       () => {
         this.fetchData();
+        this.setStatusBar();
       }
     );
   }
@@ -98,6 +99,10 @@ export class HomeScreen extends React.Component<Props, State> {
         weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
         dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
     });
+  }
+
+  private setStatusBar() {
+    StatusBar.setBarStyle('light-content');
   }
 }
 

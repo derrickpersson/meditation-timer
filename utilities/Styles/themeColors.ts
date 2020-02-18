@@ -1,58 +1,64 @@
 import { StyleSheet } from "react-native";
 
-// Color Definitions:
-
-// Default -> what the default color is.
-// Primary -> an actual color. (i.e. blue)
-// Secondary -> The next color
+export const colorPalette = {
+    primaryColor: "#4464FF",
+    white: "#FFFFFF",
+    black: "#000000",
+    darkBackground: "#212121",
+}
 
 const themeLight = StyleSheet.create({
     primaryBackgroundColor: {
-        backgroundColor: "#4464FF",
+        backgroundColor: colorPalette.primaryColor,
     },
     defaultBackgroundColor: {
-        backgroundColor: "#FFF",
+        backgroundColor: colorPalette.white,
     },
     defaultText: {
-        color: "#000",
+        color: colorPalette.black,
     },
     primaryText: {
-        color: "#FFF",
+        color: colorPalette.white,
     },
     defaultSVG: {},
     primarySVG: {},
 });
 
 themeLight.defaultSVG = {
-    fill: "#000000",
-    stroke: "#000000",
+    fill: colorPalette.black,
+    stroke: colorPalette.black,
 }
 
 themeLight.primarySVG = {
-    fill: "#4464FF",
-    stroke: "#4464FF",
+    fill: colorPalette.primaryColor,
+    stroke: colorPalette.primaryColor,
 }
 
 const themeDark = StyleSheet.create({
     primaryBackgroundColor: {
-        backgroundColor: "#4464FF",
+        backgroundColor: colorPalette.primaryColor,
     },
     defaultBackgroundColor: {
-        backgroundColor: "#212121",
+        backgroundColor: colorPalette.darkBackground,
     },
     defaultText: {
-        color: "#FFF",
+        color: colorPalette.white,
     },
     primaryText: {
-        color: "#000",
+        color: colorPalette.black,
     },
     defaultSVG: {},
     primarySVG: {},
 });
 
 themeDark.defaultSVG = {
-    fill: "#FFFFFF",
-    stroke: "#FFFFFF",
+    fill: colorPalette.white,
+    stroke: colorPalette.white,
+}
+
+themeDark.primarySVG = {
+    fill: colorPalette.primaryColor,
+    stroke: colorPalette.primaryColor,
 }
 
 export const themeColors = themeType => (themeType === "dark" ? themeDark: themeLight);
