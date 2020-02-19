@@ -3,21 +3,25 @@ import { StyleSheet, View, Text } from "react-native";
 import { SettingsItem } from "./SettingsItem";
 import withTheme, { InjectedThemeProps } from "../../utilities/Styles/withTheme";
 import { ThemeAwareView } from "../../components/ThemeAwareView";
-import { Sun } from "../../components/SvgIcons";
+import { Sun, RightArrow } from "../../components/SvgIcons";
 import { Moon } from "../../components/SvgIcons";
 import { ThemeAwareStatusBar } from "../../components/ThemeAwareStatusBar";
 import { Switch } from "react-native-gesture-handler";
 import { withStatsPresenter, InjectedStatsPresenterProps } from "../../utilities/useStatsPresenter";
 import { compose } from "recompose";
+import { MainNavigatorParamList } from "../../components/MainNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 export interface Props {
     theme: InjectedThemeProps;
     statsPresenter: InjectedStatsPresenterProps;
+    navigation: StackNavigationProp<MainNavigatorParamList, 'Settings'>;
 }
 
 export const SettingsScreen: FC<Props> = ({
     theme,
     statsPresenter,
+    navigation,
 }) => (
     <ThemeAwareView style={styles.settingsScreenContainer}>
         <ThemeAwareStatusBar />
@@ -41,8 +45,8 @@ export const SettingsScreen: FC<Props> = ({
             />
             <SettingsItem
                 name={"Thank You"}
-                Icon={() => <View><Text>Stuff</Text></View>}
-                handleOnPress={() => null}
+                Icon={() => <RightArrow isPrimary={true} style={{ padding: 8 }} />}
+                handleOnPress={() => navigation.navigate('ThankYou')}
             />
         </View>
     </ThemeAwareView>

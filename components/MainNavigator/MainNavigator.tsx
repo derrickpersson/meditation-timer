@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen, MeditationSelectionScreen, MeditationScreen, MeditationSuccessScreen, SettingsScreen } from "../../screens";
 import { HeaderBackground } from "../HeaderBackground";
 import { BackNavigation } from "../BackNavigation";
+import { ThankYouScreen } from "../../screens/ThankYouScreen";
 
 export type MainNavigatorParamList = {
     Home: undefined;
@@ -16,6 +17,7 @@ export type MainNavigatorParamList = {
         intention: string,
     };
     Settings: undefined;
+    ThankYou: undefined;
 }
 
 const MainStack = createStackNavigator<MainNavigatorParamList>();
@@ -63,6 +65,10 @@ export const MainNavigator = () => (
         })}/>
         <MainStack.Screen name="Settings" component={SettingsScreen} options={{ 
             headerStyle 
+        }}/>
+        <MainStack.Screen name="ThankYou" component={ThankYouScreen} options={{
+            headerStyle,
+            headerTitle: "Thank You",
         }}/>
     </MainStack.Navigator>
 );
