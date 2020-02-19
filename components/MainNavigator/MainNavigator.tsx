@@ -57,7 +57,10 @@ export const MainNavigator = () => (
               paddingHorizontal: 25,
             }, 
         })}/>
-        <MainStack.Screen name="MeditationSuccess" component={MeditationSuccessScreen} options={screenOptions}/>
+        <MainStack.Screen name="MeditationSuccess" component={MeditationSuccessScreen} options={(props) => ({
+            ...screenOptions(props),
+            headerLeft: null,
+        })}/>
         <MainStack.Screen name="Settings" component={SettingsScreen} options={{ 
             headerStyle 
         }}/>

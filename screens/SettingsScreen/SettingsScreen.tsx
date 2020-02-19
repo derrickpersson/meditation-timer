@@ -1,14 +1,23 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React, { FC } from "react";
+import { StyleSheet, View, Text } from "react-native";
 import { SettingsItem } from "./SettingsItem";
-import withTheme from "../../utilities/Styles/withTheme";
+import withTheme, { InjectedThemeProps } from "../../utilities/Styles/withTheme";
 import { ThemeAwareView } from "../../components/ThemeAwareView";
 import { Sun } from "../../components/SvgIcons";
 import { Moon } from "../../components/SvgIcons";
 import { ThemeAwareStatusBar } from "../../components/ThemeAwareStatusBar";
+import { Switch } from "react-native-gesture-handler";
+import { withStatsPresenter, InjectedStatsPresenterProps } from "../../utilities/useStatsPresenter";
+import { compose } from "recompose";
 
-export const SettingsScreen = ({
+export interface Props {
+    theme: InjectedThemeProps;
+    statsPresenter: InjectedStatsPresenterProps;
+}
+
+export const SettingsScreen: FC<Props> = ({
     theme,
+    statsPresenter,
 }) => (
     <ThemeAwareView style={styles.settingsScreenContainer}>
         <ThemeAwareStatusBar />
@@ -19,6 +28,21 @@ export const SettingsScreen = ({
                     return (theme.theme.type === "dark") ? <Sun />: <Moon />;
                 }}
                 handleOnPress={theme.toggle}
+            />
+            <SettingsItem 
+                name={"Hide Stats"}
+                Icon={() => <Switch 
+                    value={statsPresenter.isStatsHidden} 
+                    onValueChange={statsPresenter.toggleStats}
+                    trackColor={{ true: theme.themeColors.primaryBackgroundColor.backgroundColor, 
+                        false: null }}
+                    />
+                }
+            />
+            <SettingsItem
+                name={"Thank You"}
+                Icon={() => <View><Text>Stuff</Text></View>}
+                handleOnPress={() => null}
             />
         </View>
     </ThemeAwareView>
@@ -38,6 +62,9 @@ const styles = StyleSheet.create({
     }
 })
 
-const SettingsScreenWithTheme = withTheme(SettingsScreen);
+const SettingsScreenWithTheme = compose(
+    withTheme,
+    withStatsPresenter,
+)(SettingsScreen);
 
 export default SettingsScreenWithTheme;

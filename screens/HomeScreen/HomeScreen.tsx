@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback, FC } from 'react';
 import { View, Text, StyleSheet, StatusBar, Switch } from 'react-native';
 import { MeditationHighlightsDivider } from '../../components';
 import { asyncStorageMeditationSessionRepository, MeditationRecords } from '../../utilities/MeditationSessionRepository';
@@ -10,71 +10,52 @@ import { ThemeAwareView } from '../../components/ThemeAwareView';
 import withTheme, { InjectedThemeProps } from '../../utilities/Styles/withTheme';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SettingsGear } from '../../components/SvgIcons/SettingsGear';
+import { withStatsPresenter, InjectedStatsPresenterProps } from '../../utilities/useStatsPresenter';
+import { compose, branch, renderComponent } from "recompose";
+import HomeScreenWithoutStats from './HomeScreenWithoutStats';
+import { useFocusEffect } from '@react-navigation/native';
+import { withMeditationState, InjectedMeditationStateProps } from '../../utilities/useMeditationState';
 
 export interface Props {
   navigation: any;
   theme: InjectedThemeProps;
+  statsPresenter: InjectedStatsPresenterProps;
+  meditation: InjectedMeditationStateProps;
 }
 
-export interface State {
-  weeklyMinutes: number;
-  dayStreak: number;
-  totalMinutes: number;
-}
+export const HomeScreen: FC<Props> = ({
+  navigation,
+  meditation,
+}) => {
 
-export class HomeScreen extends React.Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  }
-  
-  private didFocusSubscription;
-
-  constructor(props){
-    super(props);
-    this.state = {
-      weeklyMinutes: 0,
-      dayStreak: 0,
-      totalMinutes: 0,
-    }
+  const setStatusBar = () => {
+    StatusBar.setBarStyle('light-content');
   }
 
-  public async componentDidMount() {
-    await this.fetchData();
-    this.didFocusSubscription = this.props.navigation.addListener(
-      'didFocus',
-      () => {
-        this.fetchData();
-        this.setStatusBar();
-      }
-    );
-  }
+  useFocusEffect(useCallback(() => {
+    setStatusBar();
+  }, []));
 
-  public componentWillUnmount() {
-    this.didFocusSubscription.remove();
-  }
-
-  public render() {
-    return (
+  return (
     <ThemeAwareView style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
-      <StatusBar barStyle="light-content" />
       <View style={styles.meditationHighlightsContainer}>
         <View style={styles.meditationHighlighsHeaderContainer}>
           <Text style={[styles.meditationStatsHeader, styles.lightText]}>Your practice</Text>
-          <TouchableOpacity onPress={() => this.props.navigation.push('Settings')}>
+          <TouchableOpacity onPress={() => navigation.push('Settings')}>
             <SettingsGear width={"35px"} height={"35px"} fill={"#FFFFFF"}/>
           </TouchableOpacity>
         </View>
         <View style={styles.meditationStatsContainer}>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(this.state.weeklyMinutes)}</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(meditation.meditationState.weeklyMinutes)}</Text>
             <Text style={[styles.subheadingText, styles.lightText]}>minutes this week</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(this.state.dayStreak)}</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(meditation.meditationState.dayStreak)}</Text>
             <Text style={[styles.subheadingText, styles.lightText]}>day streak</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(this.state.totalMinutes)}</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(meditation.meditationState.totalMinutes)}</Text>
             <Text style={[styles.subheadingText, styles.lightText]}>minutes total</Text>
           </View>
         </View>
@@ -85,25 +66,9 @@ export class HomeScreen extends React.Component<Props, State> {
       <QuotationDisplay />
         <FooterButton
           content="Meditate"
-          onPress={() => this.props.navigation.push('MeditationSelection')}
+          onPress={() => navigation.push('MeditationSelection')}
         />
-    </ThemeAwareView>)
-  }
-
-  private async fetchData() {
-    const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
-    const sessions = meditationRecords.meditationSessions;
-    this.setState({
-        ...this.state,
-        totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
-        weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
-        dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
-    });
-  }
-
-  private setStatusBar() {
-    StatusBar.setBarStyle('light-content');
-  }
+    </ThemeAwareView>);
 }
 
 const styles = StyleSheet.create({
@@ -153,7 +118,15 @@ const styles = StyleSheet.create({
   },
 })
 
-const withThemeHomeScreen = withTheme(HomeScreen);
+const withThemeHomeScreen = compose(
+  withTheme,
+  withStatsPresenter,
+  branch((props: Props) => props.statsPresenter.isStatsHidden,
+    renderComponent(HomeScreenWithoutStats)
+  ),
+  withMeditationState,
+)(HomeScreen);
+
 withThemeHomeScreen.navigationOptions = { header: null };
 
 export default withThemeHomeScreen;

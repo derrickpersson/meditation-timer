@@ -21,7 +21,7 @@ export interface MeditationRecords {
 
 export interface MeditationSessionRepository {
     getMeditationSession: (id: string) => Promise<MeditationRecords>;
-    createMeditationSession: (meditationSessionInput: MeditationSessionInput) => Promise<void>;
+    createMeditationSession: (meditationSessionInput: MeditationSessionInput) => Promise<MeditationSession>;
     getMeditationSessions: (limit?: number, sort?: SortBy) => Promise<MeditationRecords>;
 }
 

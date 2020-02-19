@@ -11,6 +11,7 @@ import { ThemeAwareText } from "../../components/ThemeAwareText";
 import { ScreenContainerView } from "../../components/ScreenContainerView";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MainNavigatorParamList } from "../../components/MainNavigator";
+import randomTextGetter from "../../utilities/randomTextGetter";
 
 const MAX_DURATION = 60;
 const MIN_DURATION = 1;
@@ -149,9 +150,7 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
             "Just focus on your breath",
             "You deserve this",
         ];
-
-        const randomIndex = (Math.floor(Math.random() * 100)) % instructionTexts.length;
-        return instructionTexts[randomIndex];
+        return randomTextGetter(instructionTexts);
     }
 
     private handleIntentionSelection = (value) => {

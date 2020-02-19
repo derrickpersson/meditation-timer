@@ -3,12 +3,15 @@ import { Text, View } from "react-native";
 import { handleFontScaling } from './utilities/Styles';
 import { useTheme, themeContext } from "./utilities/Styles/theme";
 import { themeColors, colorPalette } from "./utilities/Styles/themeColors";
-import { 
+import {
   NavigationContainer,
   DarkTheme,
-  DefaultTheme, 
+  DefaultTheme,
 } from '@react-navigation/native'
 import { MainNavigator } from './components/MainNavigator';
+import { useStatsPresenter } from './utilities/useStatsPresenter';
+import { statsPresenterContext } from './utilities/useStatsPresenter';
+import { useMeditationState, meditationStateContext } from './utilities/useMeditationState';
 
 const MyDarkTheme = {
   dark: true,
@@ -25,20 +28,25 @@ const App = () => {
   }, []);
 
   const {
-    themeState, 
+    themeState,
     setThemeState,
   } = useTheme();
 
   const toggle = () => setThemeState({
     ...themeState,
     theme: {
-      type: themeState.theme.type === "light" ? "dark": "light"
+      type: themeState.theme.type === "light" ? "dark" : "light"
     },
   });
 
   const calculatedThemeColors = themeColors(themeState.theme.type);
 
-  if(!themeState.hasThemeMounted){
+  const { isStatsHidden, setStatsHidden } = useStatsPresenter();
+  const toggleStats = () => setStatsHidden(!isStatsHidden);
+
+  const { meditationState, updateMeditationSessions } = useMeditationState();
+
+  if (!themeState.hasThemeMounted) {
     return <View><Text>LOADING</Text></View>
   }
 
@@ -48,11 +56,21 @@ const App = () => {
       themeColors: calculatedThemeColors,
       toggle,
     }}>
-        <NavigationContainer
-          theme={themeState.theme.type === "dark" ? MyDarkTheme: DefaultTheme }
-        >
-          <MainNavigator />
-        </NavigationContainer>
+      <statsPresenterContext.Provider value={{
+        isStatsHidden,
+        toggleStats,
+      }}>
+        <meditationStateContext.Provider value={{
+          meditationState,
+          updateMeditationSessions,
+        }}>
+          <NavigationContainer
+            theme={themeState.theme.type === "dark" ? MyDarkTheme : DefaultTheme}
+          >
+            <MainNavigator />
+          </NavigationContainer>
+        </meditationStateContext.Provider>
+      </statsPresenterContext.Provider>
     </themeContext.Provider>
   );
 }
