@@ -14,7 +14,7 @@ export const ThemeAwareText = ({
     return (
         <Text
             {...props}
-            style={[props.style, computedThemeColor]}
+            style={[computedThemeColor, props.style]}
         >
             {children}
         </Text>

@@ -43,7 +43,7 @@ export const MeditationSuccessWithoutStats: FC<Props> = ({
 
     return (
         <ScreenContainerView style={styles.screenContainer}>
-            <MeditationHighlightsDivider />
+            <MeditationHighlightsDivider isPrimary={true} />
             <View style={styles.encouragingTextContainer}>
                 <ThemeAwareText style={styles.encouragingText}>{getEncouragingText()}</ThemeAwareText>
             </View>

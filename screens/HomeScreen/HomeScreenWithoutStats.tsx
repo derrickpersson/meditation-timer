@@ -11,15 +11,15 @@ export const HomeScreenWithoutStats = ({
     navigation,
 }) => (
         <ThemeAwareView style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
-          <View style={styles.meditationHighlightsContainer}>
+          <ThemeAwareView isPrimary={true} style={styles.meditationHighlightsContainer}>
             <View style={styles.meditationHighlighsHeaderContainer}>
               <TouchableOpacity onPress={() => navigation.push('Settings')}>
                 <SettingsGear width={"35px"} height={"35px"} fill={"#FFFFFF"}/>
               </TouchableOpacity>
             </View>
-          </View>
+          </ThemeAwareView>
           <View style={styles.dividers}>
-            <MeditationHighlightsDivider />
+            <MeditationHighlightsDivider isPrimary={true} />
           </View>
             <QuotationDisplay />
             <FooterButton

@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import { SettingsItem } from "./SettingsItem";
 import withTheme, { InjectedThemeProps } from "../../utilities/Styles/withTheme";
 import { ThemeAwareView } from "../../components/ThemeAwareView";
@@ -40,6 +40,7 @@ export const SettingsScreen: FC<Props> = ({
                     onValueChange={statsPresenter.toggleStats}
                     trackColor={{ true: theme.themeColors.primaryBackgroundColor.backgroundColor, 
                         false: null }}
+                    thumbColor={Platform.OS === 'ios' ? null: theme.themeColors.defaultBackgroundColor.backgroundColor}
                     />
                 }
             />

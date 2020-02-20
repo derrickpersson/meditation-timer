@@ -15,9 +15,11 @@ import { compose, branch, renderComponent } from "recompose";
 import HomeScreenWithoutStats from './HomeScreenWithoutStats';
 import { useFocusEffect } from '@react-navigation/native';
 import { withMeditationState, InjectedMeditationStateProps } from '../../utilities/useMeditationState';
+import { MainNavigatorParamList } from '../../components/MainNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export interface Props {
-  navigation: any;
+  navigation: StackNavigationProp<MainNavigatorParamList, 'Home'>;
   theme: InjectedThemeProps;
   statsPresenter: InjectedStatsPresenterProps;
   meditation: InjectedMeditationStateProps;
@@ -38,7 +40,7 @@ export const HomeScreen: FC<Props> = ({
 
   return (
     <ThemeAwareView style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
-      <View style={styles.meditationHighlightsContainer}>
+      <ThemeAwareView style={styles.meditationHighlightsContainer} isPrimary={true}>
         <View style={styles.meditationHighlighsHeaderContainer}>
           <Text style={[styles.meditationStatsHeader, styles.lightText]}>Your practice</Text>
           <TouchableOpacity onPress={() => navigation.push('Settings')}>
@@ -59,9 +61,9 @@ export const HomeScreen: FC<Props> = ({
             <Text style={[styles.subheadingText, styles.lightText]}>minutes total</Text>
           </View>
         </View>
-      </View>
+      </ThemeAwareView>
       <View style={styles.dividers}>
-        <MeditationHighlightsDivider />
+        <MeditationHighlightsDivider isPrimary={true}/>
       </View>
       <QuotationDisplay />
         <FooterButton
@@ -73,7 +75,7 @@ export const HomeScreen: FC<Props> = ({
 
 const styles = StyleSheet.create({
   meditationHighlightsContainer: {
-    backgroundColor: "#4464FF",
+    // backgroundColor: "#4464FF",
     flex: 1,
     paddingTop: 50,
     paddingHorizontal: 25,

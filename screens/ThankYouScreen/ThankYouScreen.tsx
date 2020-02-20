@@ -29,12 +29,12 @@ export const ThankYouScreen = () => (
                 <ThemeAwareText style={styles.boldText}>intention</ThemeAwareText>&nbsp;&&nbsp; 
                 <ThemeAwareText style={styles.boldText}>purpose</ThemeAwareText>. 
                 If you'd like to hear about other products I'm building - sign up for my&nbsp;
-                    <Text style={styles.callToActionText} onPress={handleOpenNewsletterPage}>newsletter</Text>.
+                    <ThemeAwareText style={styles.callToActionText} isPrimary={true} onPress={handleOpenNewsletterPage}>newsletter</ThemeAwareText>.
                 </ThemeAwareText>
 
                 <ThemeAwareText style={styles.paragraphText}>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If you'd like to help continue the development of this app, you can support me on patreon&nbsp;
-                <Text style={styles.callToActionText} onPress={handleOpenPatreonPage}>here</Text>.
+                <ThemeAwareText style={styles.callToActionText} isPrimary={true} onPress={handleOpenPatreonPage}>here</ThemeAwareText>.
                 </ThemeAwareText>
             </View>
             <View style={styles.footerContainer}>
@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
         borderWidth: 10,
     },
     callToActionText: {
-        color: colorPalette.primaryColor,
         fontWeight: "bold",
     },
     footerText: {

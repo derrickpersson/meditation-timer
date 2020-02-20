@@ -2,8 +2,10 @@ import { StyleSheet } from "react-native";
 
 export const colorPalette = {
     primaryColor: "#4464FF",
+    darkPrimaryColor: "#3282b8",
     white: "#FFFFFF",
     black: "#000000",
+    grey: "#A6A3A3",
     darkBackground: "#212121",
 }
 
@@ -17,8 +19,11 @@ const themeLight = StyleSheet.create({
     defaultText: {
         color: colorPalette.black,
     },
+    secondaryText: {
+        color: colorPalette.grey,
+    },
     primaryText: {
-        color: colorPalette.white,
+        color: colorPalette.primaryColor,
     },
     defaultSVG: {},
     primarySVG: {},
@@ -36,7 +41,7 @@ themeLight.primarySVG = {
 
 const themeDark = StyleSheet.create({
     primaryBackgroundColor: {
-        backgroundColor: colorPalette.primaryColor,
+        backgroundColor: colorPalette.darkPrimaryColor,
     },
     defaultBackgroundColor: {
         backgroundColor: colorPalette.darkBackground,
@@ -45,7 +50,7 @@ const themeDark = StyleSheet.create({
         color: colorPalette.white,
     },
     primaryText: {
-        color: colorPalette.black,
+        color: colorPalette.darkPrimaryColor,
     },
     defaultSVG: {},
     primarySVG: {},
@@ -57,8 +62,8 @@ themeDark.defaultSVG = {
 }
 
 themeDark.primarySVG = {
-    fill: colorPalette.primaryColor,
-    stroke: colorPalette.primaryColor,
+    fill: colorPalette.darkPrimaryColor,
+    stroke: colorPalette.darkPrimaryColor,
 }
 
 export const themeColors = themeType => (themeType === "dark" ? themeDark: themeLight);

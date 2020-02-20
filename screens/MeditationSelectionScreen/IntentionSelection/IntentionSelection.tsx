@@ -21,7 +21,7 @@ export const IntentionSelection: FC<Props> = ({
         style={styles.intentionContainer}
     >
         <SVGIcon colour={isSelected ? "#4464FF" : false}/>
-        <ThemeAwareText>{value.toUpperCase()}</ThemeAwareText>
+        <ThemeAwareText style={styles.intentionText}>{value}</ThemeAwareText>
     </TouchableOpacity>
 );
 
@@ -29,6 +29,9 @@ const styles = StyleSheet.create({
     intentionContainer: {
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    intentionText: {
+        marginTop: 8,
     }
 })
 

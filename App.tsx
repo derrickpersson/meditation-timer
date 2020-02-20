@@ -19,6 +19,15 @@ const MyDarkTheme = {
     ...DarkTheme.colors,
     background: colorPalette.darkBackground,
     card: colorPalette.darkBackground,
+    primary: colorPalette.darkPrimaryColor,
+  }
+}
+
+const MyDefaultTheme = {
+  dark: false,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: colorPalette.primaryColor,
   }
 }
 
@@ -65,7 +74,7 @@ const App = () => {
           updateMeditationSessions,
         }}>
           <NavigationContainer
-            theme={themeState.theme.type === "dark" ? MyDarkTheme : DefaultTheme}
+            theme={themeState.theme.type === "dark" ? MyDarkTheme : MyDefaultTheme}
           >
             <MainNavigator />
           </NavigationContainer>
