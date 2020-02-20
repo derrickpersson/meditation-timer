@@ -11,6 +11,7 @@ import { withStatsPresenter, InjectedStatsPresenterProps } from "../../utilities
 import { compose } from "recompose";
 import { MainNavigatorParamList } from "../../components/MainNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { colorPalette } from "../../utilities/Styles";
 
 export interface Props {
     theme: InjectedThemeProps;
@@ -40,7 +41,7 @@ export const SettingsScreen: FC<Props> = ({
                     onValueChange={statsPresenter.toggleStats}
                     trackColor={{ true: theme.themeColors.primaryBackgroundColor.backgroundColor, 
                         false: null }}
-                    thumbColor={Platform.OS === 'ios' ? null: theme.themeColors.defaultBackgroundColor.backgroundColor}
+                    thumbColor={Platform.OS === 'ios' ? null: colorPalette.white}
                     />
                 }
             />

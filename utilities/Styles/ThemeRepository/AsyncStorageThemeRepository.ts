@@ -2,6 +2,8 @@ import { AsyncStorage } from "react-native";
 
 export type themeType = "light" | "dark";
 
+const DEFAULT_THEME = "light";
+
 export interface ITheme {
     type: themeType;
 }
@@ -26,6 +28,12 @@ export class AsyncStorageThemeRepository implements IThemeRepository {
                 } catch (err){
                     reject(err);
                 }
+            } else {
+                this.setTheme(DEFAULT_THEME).then(() => {
+                    resolve(DEFAULT_THEME);
+                }).catch((error) => {
+                    reject(error);
+                });
             }
         }));
     }

@@ -89,7 +89,7 @@ export const MeditationScreen = ({
             <View style={styles.footerSpacer}></View>
             <FooterButton
                 onPress={handleOnPressPlayPause}
-                onLongPress={completeMeditation}
+                // onLongPress={completeMeditation}
                 content={isPlaying ? "Pause" : "Play"}
             />
         </ScreenContainerView>

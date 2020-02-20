@@ -1,8 +1,8 @@
 import { StyleSheet } from "react-native";
 
 export const colorPalette = {
-    primaryColor: "#4464FF",
-    darkPrimaryColor: "#3282b8",
+    primaryColor: "#4285F5",
+    darkPrimaryColor: "#4285F5",
     white: "#FFFFFF",
     black: "#000000",
     grey: "#A6A3A3",

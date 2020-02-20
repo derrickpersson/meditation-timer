@@ -1,4 +1,4 @@
-import React, { useEffect, FC } from "react";
+import React, { useEffect, FC, useState } from "react";
 import { View, StyleSheet, StatusBar } from "react-native";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { ScreenContainerView } from "../../components/ScreenContainerView";
@@ -11,6 +11,7 @@ import { withMeditationState, InjectedMeditationStateProps } from "../../utiliti
 import { InjectedStatsPresenterProps } from "../../utilities/useStatsPresenter";
 import { MeditationHighlightsDivider } from "../../components";
 import randomTextGetter from "../../utilities/randomTextGetter";
+import { FadeInView } from "../../components/FadeInView";
 
 
 export interface Props {
@@ -25,6 +26,15 @@ export const MeditationSuccessWithoutStats: FC<Props> = ({
     navigation,
     route,
 }) => {
+    const [encouragingText, setEncouragingText] = useState("");
+
+    useEffect(() => {
+        setEncouragingText(getEncouragingText());
+        return () => {
+            setEncouragingText("");
+        }
+    });
+
     const setStatusBar = () => {
         StatusBar.setBarStyle('light-content');
     }
@@ -44,9 +54,9 @@ export const MeditationSuccessWithoutStats: FC<Props> = ({
     return (
         <ScreenContainerView style={styles.screenContainer}>
             <MeditationHighlightsDivider isPrimary={true} />
-            <View style={styles.encouragingTextContainer}>
-                <ThemeAwareText style={styles.encouragingText}>{getEncouragingText()}</ThemeAwareText>
-            </View>
+            <FadeInView style={styles.encouragingTextContainer} duration={1500}>
+                <ThemeAwareText style={styles.encouragingText}>{encouragingText}</ThemeAwareText>
+            </FadeInView>
             <FooterButton
                 content="Finish"
                 onPress={() => (navigation as any).popToTop()}

@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useCallback, FC } from 'react';
-import { View, Text, StyleSheet, StatusBar, Switch } from 'react-native';
+import React, { useCallback, FC } from 'react';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import { MeditationHighlightsDivider } from '../../components';
-import { asyncStorageMeditationSessionRepository, MeditationRecords } from '../../utilities/MeditationSessionRepository';
-import { meditationAnalysisService } from '../../utilities/MeditationAnalysisService';
 import { FooterButton } from '../../components/FooterButton/FooterButton';
 import { QuotationDisplay } from '../../components/QuotationDisplay';
 import { numberFormatter } from '../../utilities';
@@ -75,7 +73,6 @@ export const HomeScreen: FC<Props> = ({
 
 const styles = StyleSheet.create({
   meditationHighlightsContainer: {
-    // backgroundColor: "#4464FF",
     flex: 1,
     paddingTop: 50,
     paddingHorizontal: 25,

@@ -10,16 +10,24 @@ export const useTheme = () => {
     });
 
     useEffect(() => {
-        (async () => { 
-            const themeType: themeType = await themeRespository.getTheme();
-            setThemeState({
-                ...themeState,
-                theme: {
-                    type: themeType,
-                },
-                hasThemeMounted: true,
-            });
-        })();
+        const loadTheme = async () => {
+            try {
+                const themeType: themeType = await themeRespository.getTheme();
+                setThemeState({
+                    ...themeState,
+                    theme: {
+                        type: themeType,
+                    },
+                    hasThemeMounted: true,
+                });
+            } catch (error) {
+                setThemeState({
+                    ...themeState,
+                    hasThemeMounted: true,
+                });
+            }
+        }
+        loadTheme();
     }, []);
 
     useEffect(() => {
