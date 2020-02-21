@@ -1,100 +1,80 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { asyncStorageMeditationSessionRepository, MeditationRecords } from "../../utilities/MeditationSessionRepository";
-import { meditationAnalysisService } from "../../utilities/MeditationAnalysisService";
+import React, { useEffect, FC } from "react";
+import { View, StyleSheet } from "react-native";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import AnimateNumber from "react-native-animate-number";
 import { numberFormatter } from "../../utilities/numberFormatter";
-import { NavigationInjectedProps } from "react-navigation";
+import { ScreenContainerView } from "../../components/ScreenContainerView";
+import { MainNavigatorParamList } from "../../components/MainNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
+import { ThemeAwareText } from "../../components/ThemeAwareText";
+import withTheme, { InjectedThemeProps } from "../../utilities/Styles/withTheme";
+import { compose, branch, renderComponent } from "recompose";
+import { withMeditationState, InjectedMeditationStateProps } from "../../utilities/useMeditationState";
+import { InjectedStatsPresenterProps, withStatsPresenter } from "../../utilities/useStatsPresenter";
+import MeditationSuccessWithoutStats from "./MeditationSuccessWithoutStats";
 
-export interface State {
-    totalMinutes: number;
-    dayStreak: number;
-    weeklyMinutes: number;
+export interface Props {
+    route: RouteProp<MainNavigatorParamList, 'MeditationSuccess'>;
+    navigation: StackNavigationProp<MainNavigatorParamList, 'MeditationSuccess'>;
+    theme: InjectedThemeProps;
+    meditation: InjectedMeditationStateProps;
+    statsPresenter: InjectedStatsPresenterProps;
 }
 
-export class MeditationSuccessScreen extends React.Component<NavigationInjectedProps, State> {
-    static navigationOptions = {
-        header: null,
+export const MeditationSuccessScreen: FC<Props> = ({
+    meditation,
+    navigation,
+    route,
+    theme,
+}) => {
+    useEffect(() => {
+       meditation.updateMeditationSessions({
+            duration: route.params && route.params.duration,
+            intention: route.params && route.params.intention,
+            createdDate: new Date(),
+       });
+    }, []);
+
+    const animatedNumberSettings = {
+        formatter: numberFormatter,
+        style: [styles.headingText, theme.themeColors.defaultText],
+        timing: "easeIn",
+        countBy: 1
     }
 
-    public constructor(props){
-        super(props);
-
-        this.state = {
-            totalMinutes: null,
-            dayStreak: null,
-            weeklyMinutes: null,
-        }
-    }
-
-
-    public async componentDidMount() {
-        const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
-        const sessions = meditationRecords.meditationSessions;
-        this.setState({
-            ...this.state,
-            totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
-            weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
-            dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
-        }, async () => {
-            await asyncStorageMeditationSessionRepository.createMeditationSession({
-                duration: this.props.navigation.state.params && this.props.navigation.state.params.duration,
-                intention: this.props.navigation.state.params && this.props.navigation.state.params.intention,
-                createdDate: new Date(),
-            });
-            const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
-            const sessions = meditationRecords.meditationSessions;
-            this.setState({
-                ...this.state,
-                totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
-                weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
-                dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
-            });
-        });
-    }
-
-    public render() {
-
-        const animatedNumberSettings = {
-            formatter: numberFormatter,
-            style: styles.headingText,
-            timing: "easeIn",
-            countBy: 1
-        }
-
-        return (
-            <View style={styles.screenContainer}>
-                <View style={styles.footerSpacer}></View>                
-                <View style={styles.individualStatsContainer}>
-                    {!!this.state.dayStreak && <AnimateNumber 
-                        value={this.state.dayStreak || 0}
-                        {...animatedNumberSettings}
-                    />}
-                    <Text style={styles.subheadingText}>day streak</Text>
-                </View>
-                <View style={styles.individualStatsContainer}>
-                    {!!this.state.weeklyMinutes && <AnimateNumber 
-                        value={this.state.weeklyMinutes || 0} 
-                        {...animatedNumberSettings}
-                    />}
-                    <Text style={styles.subheadingText}>minutes this week</Text>
-                </View>
-                <View style={styles.individualStatsContainer}>
-                    {!!this.state.totalMinutes && <AnimateNumber 
-                        value={this.state.totalMinutes || 0} 
-                        {...animatedNumberSettings}
-                    />}
-                    <Text style={styles.subheadingText}>minutes total</Text>
-                </View>
-                <View style={styles.footerSpacer}></View>
-                <FooterButton
-                    content="Finish"
-                    onPress={() => (this.props.navigation as any).popToTop()}
-                />
+    return (
+        <ScreenContainerView style={styles.screenContainer}>
+            <View style={styles.footerSpacer}></View>                
+            <View style={styles.individualStatsContainer}>
+                {!!meditation.meditationState.dayStreak && <AnimateNumber 
+                    value={meditation.meditationState.dayStreak}
+                    {...animatedNumberSettings}
+                />}
+                <ThemeAwareText style={styles.subheadingText}>day streak</ThemeAwareText>
             </View>
-        )
-    }
+            <View style={styles.individualStatsContainer}>
+                {!!meditation.meditationState.weeklyMinutes && <AnimateNumber 
+                    value={meditation.meditationState.weeklyMinutes} 
+                    {...animatedNumberSettings}
+                />}
+                <ThemeAwareText style={styles.subheadingText}>minutes this week</ThemeAwareText>
+            </View>
+            <View style={styles.individualStatsContainer}>
+                {!!meditation.meditationState.totalMinutes && <AnimateNumber 
+                    value={meditation.meditationState.totalMinutes} 
+                    {...animatedNumberSettings}
+                    countBy={3}
+                />}
+                <ThemeAwareText style={styles.subheadingText}>minutes total</ThemeAwareText>
+            </View>
+            <View style={styles.footerSpacer}></View>
+            <FooterButton
+                content="Finish"
+                onPress={() => (navigation as any).popToTop()}
+            />
+        </ScreenContainerView>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -102,6 +82,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 0,
     },
     individualStatsContainer: {
         flex: 1,
@@ -119,4 +100,15 @@ const styles = StyleSheet.create({
     },
 })
 
-export default MeditationSuccessScreen;
+const MeditationSuccessScreenWithInjectedProps = compose(
+    withTheme,
+    withMeditationState,
+    withStatsPresenter,
+    branch((props: Props) => props.statsPresenter.isStatsHidden,
+        renderComponent(MeditationSuccessWithoutStats),
+    ),
+)(MeditationSuccessScreen);
+
+MeditationSuccessScreenWithInjectedProps.navigationOptions = { header: null };
+
+export default MeditationSuccessScreenWithInjectedProps;

@@ -24,11 +24,14 @@ export const useMeditationPlaylistPlayer = ({
     const playbackInstance: any = useRef(null);
 
     useEffect(() => {
+        loadAudioPlayer();
+    }, []);
+
+    useEffect(() => {
         if(playerState.isFinished){
             unloadPlaybackInstance();
             handleOnComplete();
         } else {
-            loadAudioPlayer();
             loadNewPlaybackInstance(playerState.shouldPlay, playerState.currentTrack);
         }
         return () => unloadPlaybackInstance();
@@ -143,6 +146,9 @@ export const useMeditationPlaylistPlayer = ({
                 true, // TODO: make this false & handle buffering events
             );
             playbackInstance.current = sound;
+            dispatch({
+                type: "loadedNewTrack",
+            });
         } catch (error) {
             console.error(`Fatal error: `, error);
             loadNewPlaybackInstance(playing, currentTrack);
@@ -150,39 +156,33 @@ export const useMeditationPlaylistPlayer = ({
     }
 
     const onPlaybackStatusUpdate = status => {
-        if(status.isBuffering){
-            dispatch({
-                type: "newTrackBuffering",
-            });
-        } else {
-            if (status.isLoaded) {
-                if (status.didJustFinish) {
-                    dispatch({
-                        type: "didJustFinish",
-                        payload: {
-                            completedDuration: status.durationMillis,
-                            playbackInstancePosition: status.positionMillis,
-                        }
-                    });
-                } else {
-                    dispatch({
-                        type: "statusUpdate",
-                        payload: {
-                            isLoading: status.isLoading,
-                            playbackInstancePosition: status.positionMillis,
-                            playbackInstanceDuration: status.durationMillis,
-                            isPlaying: status.isPlaying,
-                            isBuffering: status.isBuffering,
-                            muted: status.isMuted,
-                            volume: status.volume,
-                            isLooping: status.isLooping,
-                        },
-                    });
-                }
+        if (status.isLoaded) {
+            if (status.didJustFinish) {
+                dispatch({
+                    type: "didJustFinish",
+                    payload: {
+                        completedDuration: status.durationMillis,
+                        playbackInstancePosition: status.positionMillis,
+                    }
+                });
             } else {
-                if (status.error) {
-                    console.log(`FATAL PLAYER ERROR: ${status.error}`);
-                }
+                dispatch({
+                    type: "statusUpdate",
+                    payload: {
+                        isLoading: status.isLoading,
+                        playbackInstancePosition: status.positionMillis,
+                        playbackInstanceDuration: status.durationMillis,
+                        isPlaying: status.isPlaying,
+                        isBuffering: status.isBuffering,
+                        muted: status.isMuted,
+                        volume: status.volume,
+                        isLooping: status.isLooping,
+                    },
+                });
+            }
+        } else {
+            if (status.error) {
+                console.log(`FATAL PLAYER ERROR: ${status.error}`);
             }
         }
     };

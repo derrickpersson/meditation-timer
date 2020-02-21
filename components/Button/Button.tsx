@@ -1,5 +1,6 @@
 import React from "react";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
+import { ThemeAwareTouchableOpacity } from "../ThemeAwareTouchableOpacity";
 
 export const Button = ({
     containerStyles = {},
@@ -9,13 +10,14 @@ export const Button = ({
     ...props
 }) => (
     <View style={[styles.actionContainer, containerStyles]}>
-        <TouchableOpacity
+        <ThemeAwareTouchableOpacity
             style={[styles.baseButtonStyles, buttonStyles]}
             onPress={onPress}
+            isPrimary={true}
             {...props}
         >
             <Text style={styles.baseButtonContentStyle}>{content}</Text>
-        </TouchableOpacity>
+        </ThemeAwareTouchableOpacity>
     </View>
 );
 
@@ -25,7 +27,6 @@ const styles = StyleSheet.create({
         width: '90%',
     },
     baseButtonStyles: {
-        backgroundColor: "#4464FF",
         borderRadius: 10,
         padding: 10,
     },

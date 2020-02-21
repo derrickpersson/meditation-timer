@@ -19,6 +19,7 @@ export class BackNavigation extends React.Component<Props & NavigationInjectedPr
             >
                 <Ex
                     containerStyle={styles.backNavigationIcon}
+                    isPrimary={true}
                 />
             </TouchableOpacity>}
         </View>

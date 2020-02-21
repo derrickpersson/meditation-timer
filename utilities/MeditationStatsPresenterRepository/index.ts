@@ -1,0 +1,1 @@
+export { default as meditationStatsPresentorRepository } from "./MeditationStatsPresenterRepository";

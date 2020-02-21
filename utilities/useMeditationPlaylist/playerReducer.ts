@@ -22,7 +22,7 @@ export interface PlayerState {
 
 export const playerReducer = (state: PlayerState, action) => {
     switch (action.type) {
-        case "newTrackBuffering":
+        case "loadedNewTrack":
             return {
                 ...state,
                 trackDidEnd: false,
@@ -56,6 +56,7 @@ export const playerReducer = (state: PlayerState, action) => {
             const sumOfPreviousPlaylistDurations = state.sumOfPreviousPlaylistDurations + action.payload.completedDuration;
             const isFinished = state.currentTrack === state.playlist.getPlaylistLength() - 1;
             const nextTrack = isFinished ? state.currentTrack : state.currentTrack + 1;
+            const shouldLoop = state.loopCount + 1 <= targetLoopCount;
 
             return {
                 ...state,
@@ -63,10 +64,10 @@ export const playerReducer = (state: PlayerState, action) => {
                 shouldPlay: !isFinished,
                 sumOfPreviousPlaylistDurations,
                 elapsedPlaytime: sumOfPreviousPlaylistDurations,
-                currentTrack: state.isLooping ? state.currentTrack : nextTrack,
+                currentTrack: shouldLoop ? state.currentTrack : nextTrack,
                 isFinished: isFinished,
                 loopCount: loopCount,
-                isLooping: state.loopCount + 1 < targetLoopCount,
+                isLooping: shouldLoop,
             };
         case "updateCurrentPlayState":
             return {
