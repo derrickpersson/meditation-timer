@@ -1,12 +1,13 @@
 import React from 'react';
 import Svg, { G, Rect, Ellipse, Polygon } from 'react-native-svg';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { compose } from "recompose";
 import { withThemeSVG } from './withThemeSVG';
+import { colorPalette } from '../../utilities/Styles';
 
 export const Sun = ({
-    fill = "#000000",
-    stroke = "#000000",
+    fill = colorPalette.black,
+    stroke = colorPalette.black,
     height = "44px",
     width = "45px",
     ...props

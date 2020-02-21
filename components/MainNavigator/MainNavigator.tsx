@@ -1,7 +1,6 @@
 import React from "react";
 import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen, MeditationSelectionScreen, MeditationScreen, MeditationSuccessScreen, SettingsScreen } from "../../screens";
-import { HeaderBackground } from "../HeaderBackground";
 import { BackNavigation } from "../BackNavigation";
 import { ThankYouScreen } from "../../screens/ThankYouScreen";
 
@@ -35,7 +34,6 @@ const headerStyle = {
 const screenOptions = ({ navigation }) => ({
     headerStyle,
     headerTransparent: true,
-    headerBackground: HeaderBackground,
     headerLeft: () => <BackNavigation navigation={navigation} />,
     headerTitle: null,
 });

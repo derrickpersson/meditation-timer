@@ -5,16 +5,23 @@ describe("playerReducer", () => {
 
     const initialPlayerState = createInitialPlayerState(new MeditationPlaylist(3, {} as any));
 
-    it("should handle buffer state", () => {
-        const newState = playerReducer(initialPlayerState, {
-            type: "newTrackBuffering"
+    it("should load new track", () => {
+        const loadedNewTrackState = {
+            ...initialPlayerState,
+            trackDidEnd: true,
+            isPlaying: false,
+            shouldPlay: true,
+            sumOfPreviousPlaylistDurations: 1000,
+        }
+        const newState = playerReducer(loadedNewTrackState, {
+            type: "loadedNewTrack"
         });
 
         const expectedPlayerState = {
-            ...initialPlayerState,
+            ...loadedNewTrackState,
             trackDidEnd: false,
-            isPlaying: false,
-            elapsedPlaytime: 0,
+            isPlaying: true,
+            elapsedPlaytime: 1000,
         }
         expect(newState).toEqual(expectedPlayerState);
     });

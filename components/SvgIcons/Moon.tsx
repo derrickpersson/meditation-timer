@@ -1,12 +1,13 @@
 import React from 'react';
-import Svg, { G, Rect, Ellipse, Polygon, Path } from 'react-native-svg';
-import { View, StyleSheet } from 'react-native';
+import Svg, { G, Path } from 'react-native-svg';
+import { View } from 'react-native';
 import { compose } from "recompose";
 import { withThemeSVG } from './withThemeSVG';
+import { colorPalette } from '../../utilities/Styles';
 
 export const Moon = ({
-    fill = "#000000",
-    stroke = "#000000",
+    fill = colorPalette.black,
+    stroke = colorPalette.black,
     height = "44px",
     width = "45px",
     ...props

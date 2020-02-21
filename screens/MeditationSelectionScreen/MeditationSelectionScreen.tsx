@@ -2,7 +2,6 @@ import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { DownArrow, UpArrow } from "../../components/SvgIcons";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
-import { BackNavigation } from "../../components/BackNavigation";
 import GrattitudeCircle from "../../components/SvgIcons/GrattitudeCircle";
 import HeartCircle from "../../components/SvgIcons/HeartCircle";
 import BalanceCircle from "../../components/SvgIcons/BalanceCircle";
@@ -15,20 +14,22 @@ import randomTextGetter from "../../utilities/randomTextGetter";
 
 const MAX_DURATION = 60;
 const MIN_DURATION = 1;
+const HALF_WAY_POINT = 30;
+const INITIAL_CHANGE_SPEED = 500;
+const HIGH_END_CHANGE_SPEED = 100;
+const LOW_END_CHANGE_SPEED = 150;
+const SPEED_CHANGE = 150;
 
 
 type InjectedNavigationProp = {
     navigation: StackNavigationProp<MainNavigatorParamList, 'MeditationSelection'>;
 };
 
-class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
-    static navigationOptions = ({ navigation }) => ({
-        headerLeft: () => <BackNavigation navigation={navigation} />,
-    });
+export class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
+    private touched: boolean;
+    private timeOut;
 
-    private interval;
-
-    public constructor(props){
+    public constructor(props) {
         super(props);
         this.state = {
             selectedDuration: 10,
@@ -38,32 +39,58 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
     }
 
     private handleIncreaseSelection = (event) => {
+        this.touched = true;
         this.setState({
             selectedDuration: this.state.selectedDuration === MAX_DURATION ? MAX_DURATION: this.state.selectedDuration + 1,
         });
-        this.interval = setInterval(() => {
-            this.setState({
-                selectedDuration: this.state.selectedDuration === MAX_DURATION ? MAX_DURATION: this.state.selectedDuration + 1,
-            });
-        }, 250);
+        let int = INITIAL_CHANGE_SPEED;
+        const increase = () => {
+            this.timeOut = setTimeout(() => {
+                if (this.touched) {
+                    this.setState({
+                        selectedDuration: this.state.selectedDuration === MAX_DURATION ? MAX_DURATION : this.state.selectedDuration + 1,
+                    });
+                    int = this.getChangedSpeed(int, this.state.selectedDuration > HALF_WAY_POINT );
+                    increase();
+                }
+            }, int)
+        }
+        increase();
     }
 
     private handleDeselection = (event) => {
-        clearInterval(this.interval);
+        this.touched = false;
+        clearTimeout(this.timeOut);
     }
 
     private handleDecreaseSelection = (event) => {
+        this.touched = true;
         this.setState({
             selectedDuration: this.state.selectedDuration === MIN_DURATION ? MIN_DURATION : this.state.selectedDuration - 1,
         });
-        this.interval = setInterval(() => {
-            this.setState({
-                selectedDuration: this.state.selectedDuration === MIN_DURATION ? MIN_DURATION : this.state.selectedDuration - 1,
-            });
-        }, 250);
+
+        let int = INITIAL_CHANGE_SPEED;
+        const decrease = () => {
+            this.timeOut = setTimeout(() => {
+                if (this.touched) {
+                    this.setState({
+                        selectedDuration: this.state.selectedDuration === MIN_DURATION ? MIN_DURATION : this.state.selectedDuration - 1,
+                    });
+                    int = this.getChangedSpeed(int, this.state.selectedDuration < HALF_WAY_POINT);
+                    decrease();
+                }
+            }, int)
+        }
+        decrease();
     }
 
-    public componentDidMount(){
+    private getChangedSpeed = (int, isHighEnd: boolean) => {
+        return isHighEnd ?
+            (int <= HIGH_END_CHANGE_SPEED ? HIGH_END_CHANGE_SPEED: int - SPEED_CHANGE):
+            (int <= LOW_END_CHANGE_SPEED ? LOW_END_CHANGE_SPEED : int - SPEED_CHANGE );
+    }
+
+    public componentDidMount() {
         this.setState({
             ...this.state,
             instructionText: this.getInstructionText(),
@@ -72,10 +99,10 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
 
     public render() {
 
-    const minSelected = this.state.selectedDuration === MIN_DURATION;
-    const maxSelected = this.state.selectedDuration === MAX_DURATION;
+        const minSelected = this.state.selectedDuration === MIN_DURATION;
+        const maxSelected = this.state.selectedDuration === MAX_DURATION;
 
-    return (
+        return (
             <ScreenContainerView style={styles.screenContainer}>
                 <View style={styles.headingTextContainer}>
                     <ThemeAwareText style={styles.headingText}>{this.state.instructionText}</ThemeAwareText>
@@ -86,10 +113,10 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
                         onPressIn={this.handleIncreaseSelection}
                         onPressOut={this.handleDeselection}
                     >
-                        <UpArrow style={maxSelected ? styles.disabledArrow: styles.enabledArrow}/>
+                        <UpArrow style={maxSelected ? styles.disabledArrow : styles.enabledArrow} />
                     </TouchableOpacity>
                     <View style={styles.durationDisplayContainer}>
-                        <View style={{flex: 1}}>
+                        <View style={{ flex: 1 }}>
 
                         </View>
                         <View style={{ flex: 1 }}>
@@ -105,7 +132,7 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
                         onPressIn={this.handleDecreaseSelection}
                         onPressOut={this.handleDeselection}
                     >
-                        <DownArrow style={minSelected ? styles.disabledArrow: styles.enabledArrow}/>
+                        <DownArrow style={minSelected ? styles.disabledArrow : styles.enabledArrow} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.headingTextContainer}>
@@ -134,13 +161,14 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
                 <View style={styles.footerSpacer}></View>
                 <FooterButton
                     content="Set Meditation"
-                    onPress={() => this.props.navigation.navigate('Meditation', { 
+                    onPress={() => this.props.navigation.navigate('Meditation', {
                         duration: this.state.selectedDuration,
                         intention: this.state.selectedIntention,
-                     })}
+                    })}
                 />
             </ScreenContainerView>
-    )}
+        )
+    }
 
     private getInstructionText() {
         const instructionTexts = [
@@ -154,7 +182,7 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
     }
 
     private handleIntentionSelection = (value) => {
-        if(this.state.selectedIntention === value) {
+        if (this.state.selectedIntention === value) {
             this.setState({
                 ...this.state,
                 selectedIntention: "",
@@ -171,7 +199,7 @@ class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
 const styles = StyleSheet.create({
     screenContainer: {
         flex: 1,
-        justifyContent: 'space-around', 
+        justifyContent: 'space-around',
         alignItems: 'center',
     },
     headingTextContainer: {
@@ -190,13 +218,13 @@ const styles = StyleSheet.create({
     },
     upArrowContainer: {
         flex: 0.5,
-        alignItems: "center", 
-        justifyContent: "center", 
+        alignItems: "center",
+        justifyContent: "center",
     },
-    downArrow: { 
+    downArrow: {
         flex: 0.5,
-        alignItems: "center", 
-        justifyContent: "center" 
+        alignItems: "center",
+        justifyContent: "center"
     },
     enabledArrow: {
         opacity: 1,

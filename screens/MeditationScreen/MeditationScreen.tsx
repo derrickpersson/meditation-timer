@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { BackHandler } from 'react-native';
 import { useMeditationPlaylistPlayer } from "../../utilities/useMeditationPlaylist";

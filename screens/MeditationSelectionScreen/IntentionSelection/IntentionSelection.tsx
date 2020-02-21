@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { ThemeAwareText } from "../../../components/ThemeAwareText";
 
 interface Props {

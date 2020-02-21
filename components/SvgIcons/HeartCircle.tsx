@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, { G, Path, Circle } from 'react-native-svg';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
 const HeartCircle = (props) => {
     return (

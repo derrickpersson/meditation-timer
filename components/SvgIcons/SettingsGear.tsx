@@ -1,11 +1,12 @@
 import React from 'react';
 import Svg, { G, Path } from 'react-native-svg';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { compose } from "recompose";
 import { withThemeSVG } from './withThemeSVG';
+import { colorPalette } from '../../utilities/Styles';
 
 export const SettingsGear = ({
-    fill = "#000000",
+    fill = colorPalette.black,
     height = "92px",
     width = "94px",
     ...props

@@ -1,10 +1,8 @@
 import React from "react";
-import { View, StyleSheet, Text, Linking } from "react-native";
+import { View, StyleSheet, Linking } from "react-native";
 import { ThemeAwareText } from "../../components/ThemeAwareText";
 import { ThemeAwareView } from "../../components/ThemeAwareView";
 import { ScrollView } from "react-native-gesture-handler";
-import { colorPalette } from "../../utilities/Styles";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 export const ThankYouScreen = () => (
     <ScrollView>

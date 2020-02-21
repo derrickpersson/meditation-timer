@@ -1,5 +1,5 @@
 import React, { useEffect, FC, useState } from "react";
-import { View, StyleSheet, StatusBar } from "react-native";
+import { StyleSheet, StatusBar } from "react-native";
 import { FooterButton } from "../../components/FooterButton/FooterButton";
 import { ScreenContainerView } from "../../components/ScreenContainerView";
 import { MainNavigatorParamList } from "../../components/MainNavigator";
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 0,
     },
     encouragingTextContainer: {
         flex: 1,

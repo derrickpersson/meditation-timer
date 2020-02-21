@@ -3,9 +3,10 @@ import Svg, { G, Path } from 'react-native-svg';
 import { View, StyleSheet } from 'react-native';
 import { compose } from "recompose";
 import { withThemeSVG } from "./withThemeSVG";
+import { colorPalette } from '../../utilities/Styles';
 
 const UpArrow = ({
-    stroke = "#000000",
+    stroke = colorPalette.black,
     ...props
 }) => {
     return (

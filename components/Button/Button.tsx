@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { ThemeAwareTouchableOpacity } from "../ThemeAwareTouchableOpacity";
 
 export const Button = ({

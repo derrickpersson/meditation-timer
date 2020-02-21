@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { ThemeAwareText } from "../../../components/ThemeAwareText";
 
 export interface Props {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Text, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { handleFontScaling } from './utilities/Styles';
 import { useTheme, themeContext } from "./utilities/Styles/theme";
 import { themeColors, colorPalette } from "./utilities/Styles/themeColors";
@@ -56,7 +56,7 @@ const App = () => {
   const { meditationState, updateMeditationSessions } = useMeditationState();
 
   if (!themeState.hasThemeMounted) {
-    return <View><Text>LOADING</Text></View>
+    return <ActivityIndicator size="large" color={colorPalette.primaryColor}/>
   }
 
   return (

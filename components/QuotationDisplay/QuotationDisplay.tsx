@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { OpenQuotationMark, CloseQuotationMark } from "../SvgIcons";
 import { quotationService } from "../../utilities/QuotationService";
 import { FadeInView } from "../FadeInView";
