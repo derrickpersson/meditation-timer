@@ -12,6 +12,8 @@ import { compose } from "recompose";
 import { MainNavigatorParamList } from "../../components/MainNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { colorPalette } from "../../utilities/Styles";
+import { ThemeAwareText } from "../../components/ThemeAwareText";
+import insertMassMeditationSessionRecordsForPerformanceReasons from "../../utilities/dev/runPerformanceTest";
 
 export interface Props {
     theme: InjectedThemeProps;
@@ -50,6 +52,12 @@ export const SettingsScreen: FC<Props> = ({
                 Icon={() => <RightArrow isPrimary={true} style={{ padding: 8 }} />}
                 handleOnPress={() => navigation.navigate('ThankYou')}
             />
+            {__DEV__ ? <SettingsItem
+                name={"Performance Test"}
+                Icon={() => <View><ThemeAwareText>Run Da Test</ThemeAwareText></View>}
+                handleOnPress={() => insertMassMeditationSessionRecordsForPerformanceReasons(5000)}
+                />: null
+            }
         </View>
     </ThemeAwareView>
 );
