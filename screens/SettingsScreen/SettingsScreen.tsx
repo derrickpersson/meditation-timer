@@ -14,6 +14,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { colorPalette } from "../../utilities/Styles";
 import { ThemeAwareText } from "../../components/ThemeAwareText";
 import insertMassMeditationSessionRecordsForPerformanceReasons from "../../utilities/dev/runPerformanceTest";
+import resetMeditationSessionRecords from "../../utilities/dev/resetMeditationSessions";
 
 export interface Props {
     theme: InjectedThemeProps;
@@ -56,6 +57,12 @@ export const SettingsScreen: FC<Props> = ({
                 name={"Performance Test"}
                 Icon={() => <View><ThemeAwareText>Run Da Test</ThemeAwareText></View>}
                 handleOnPress={() => insertMassMeditationSessionRecordsForPerformanceReasons(5000)}
+                />: null
+            }
+            {__DEV__ ? <SettingsItem
+                name={"Reset"}
+                Icon={() => <View><ThemeAwareText>Clear Items</ThemeAwareText></View>}
+                handleOnPress={() => resetMeditationSessionRecords()}
                 />: null
             }
         </View>

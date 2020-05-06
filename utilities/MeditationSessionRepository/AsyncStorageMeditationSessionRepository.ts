@@ -73,6 +73,15 @@ export class AsyncStorageMeditationSessionRepository implements MeditationSessio
             });
         }));
     }
+
+    public clearMeditationSessions(): Promise<void>{
+        return new Promise((resolve, reject) => AsyncStorage.removeItem(meditationSessionsKey, (error) => {
+            if(error){
+                reject(error);
+            }
+            resolve();
+        }));
+    }
 }
 
 export default new AsyncStorageMeditationSessionRepository();

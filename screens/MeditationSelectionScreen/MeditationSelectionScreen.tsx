@@ -11,6 +11,8 @@ import { ScreenContainerView } from "../../components/ScreenContainerView";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MainNavigatorParamList } from "../../components/MainNavigator";
 import randomTextGetter from "../../utilities/randomTextGetter";
+import { compose } from "recompose";
+import { withMeditationState, InjectedMeditationStateProps } from "../../utilities/useMeditationState";
 
 const MAX_DURATION = 60;
 const MIN_DURATION = 1;
@@ -25,14 +27,18 @@ type InjectedNavigationProp = {
     navigation: StackNavigationProp<MainNavigatorParamList, 'MeditationSelection'>;
 };
 
-export class MeditationScreen extends React.Component<InjectedNavigationProp, any> {
+export interface Props {
+    meditation: InjectedMeditationStateProps;
+}
+
+export class MeditationScreen extends React.Component<Props & InjectedNavigationProp, any> {
     private touched: boolean;
     private timeOut;
 
     public constructor(props) {
         super(props);
         this.state = {
-            selectedDuration: 10,
+            selectedDuration: 0,
             instructionText: "",
             selectedIntention: "",
         };
@@ -91,8 +97,13 @@ export class MeditationScreen extends React.Component<InjectedNavigationProp, an
     }
 
     public componentDidMount() {
+        let sessionDuration = 10;
+        if(this.props.meditation.meditationState.meditationSessions.length > 0){
+            sessionDuration = this.props.meditation.meditationState.meditationSessions[0].duration;
+        }
         this.setState({
             ...this.state,
+            selectedDuration: sessionDuration,
             instructionText: this.getInstructionText(),
         });
     }
@@ -261,4 +272,6 @@ const styles = StyleSheet.create({
 });
 
 
-export default MeditationScreen;
+export default compose(
+    withMeditationState,
+)(MeditationScreen);

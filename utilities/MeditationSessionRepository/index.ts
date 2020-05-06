@@ -23,6 +23,7 @@ export interface MeditationSessionRepository {
     getMeditationSession: (id: string) => Promise<MeditationRecords>;
     createMeditationSession: (meditationSessionInput: MeditationSessionInput) => Promise<MeditationSession>;
     getMeditationSessions: (limit?: number, sort?: SortBy) => Promise<MeditationRecords>;
+    clearMeditationSessions: () => Promise<void>;
 }
 
 export { default as asyncStorageMeditationSessionRepository } from "./AsyncStorageMeditationSessionRepository";
