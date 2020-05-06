@@ -9,10 +9,9 @@
       "android",
       "web"
     ],
-    "version": "0.2.0",
+    "version": "0.3.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "primaryColor": "#4464FF",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -33,12 +32,12 @@
           "audio"
         ]
       },
-      "buildNumber": "1.0.1"
+      "buildNumber": "1.1.1"
     },
     "android": {
       "package": "com.intentful.intentfulmeditationtimer",
       "permissions": [],
-      "versionCode": 3
+      "versionCode": 5
     }
   }
 }

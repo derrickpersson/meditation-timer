@@ -1,106 +1,86 @@
-import React from 'react';
+import React, { useCallback, FC } from 'react';
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
-import { OpenQuotationMark, CloseQuotationMark, MeditationHighlightsDivider } from '../../components';
-import { Button } from '../../components/Button';
-import { asyncStorageMeditationSessionRepository, MeditationRecords } from '../../utilities/MeditationSessionRepository';
-import { meditationAnalysisService } from '../../utilities/MeditationAnalysisService';
-import { Quote, quotationService } from '../../utilities/QuotationService';
+import { MeditationHighlightsDivider } from '../../components';
 import { FooterButton } from '../../components/FooterButton/FooterButton';
 import { QuotationDisplay } from '../../components/QuotationDisplay';
 import { numberFormatter } from '../../utilities';
+import { ThemeAwareView } from '../../components/ThemeAwareView';
+import withTheme, { InjectedThemeProps } from '../../utilities/Styles/withTheme';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { SettingsGear } from '../../components/SvgIcons/SettingsGear';
+import { withStatsPresenter, InjectedStatsPresenterProps } from '../../utilities/useStatsPresenter';
+import { compose, branch, renderComponent } from "recompose";
+import HomeScreenWithoutStats from './HomeScreenWithoutStats';
+import { useFocusEffect } from '@react-navigation/native';
+import { withMeditationState, InjectedMeditationStateProps } from '../../utilities/useMeditationState';
+import { MainNavigatorParamList } from '../../components/MainNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export interface Props {
-  navigation: any;
+  navigation: StackNavigationProp<MainNavigatorParamList, 'Home'>;
+  theme: InjectedThemeProps;
+  statsPresenter: InjectedStatsPresenterProps;
+  meditation: InjectedMeditationStateProps;
 }
 
-export interface State {
-  weeklyMinutes: number;
-  dayStreak: number;
-  totalMinutes: number;
-}
+export const HomeScreen: FC<Props> = ({
+  navigation,
+  meditation,
+}) => {
 
-class HomeScreen extends React.Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  }
-  
-  private didFocusSubscription;
-
-  constructor(props){
-    super(props);
-    this.state = {
-      weeklyMinutes: 0,
-      dayStreak: 0,
-      totalMinutes: 0,
-    }
+  const setStatusBar = () => {
+    StatusBar.setBarStyle('light-content');
   }
 
-  public async componentDidMount() {
-    await this.fetchData();
-    this.didFocusSubscription = this.props.navigation.addListener(
-      'didFocus',
-      () => {
-        this.fetchData();
-      }
-    );
-  }
+  useFocusEffect(useCallback(() => {
+    setStatusBar();
+  }, []));
 
-  public componentWillUnmount() {
-    this.didFocusSubscription.remove();
-  }
-
-  public render() {
-  
-    return (
-    <View style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
-      <StatusBar barStyle="light-content" />
-      <View style={styles.meditationHighlightsContainer}>
-        <Text style={[styles.meditationStatsHeader, styles.whiteText]}>Your practice</Text>
+  return (
+    <ThemeAwareView style={{flex: 1, justifyContent: 'space-around', alignItems: 'center'}}>
+      <ThemeAwareView style={styles.meditationHighlightsContainer} isPrimary={true}>
+        <View style={styles.meditationHighlighsHeaderContainer}>
+          <Text style={[styles.meditationStatsHeader, styles.lightText]}>Your practice</Text>
+          <TouchableOpacity onPress={() => navigation.push('Settings')}>
+            <SettingsGear width={"35px"} height={"35px"} fill={"#FFFFFF"}/>
+          </TouchableOpacity>
+        </View>
         <View style={styles.meditationStatsContainer}>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.weeklyMinutes)}</Text>
-            <Text style={[styles.subheadingText, styles.whiteText]}>minutes this week</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(meditation.meditationState.weeklyMinutes)}</Text>
+            <Text style={[styles.subheadingText, styles.lightText]}>minutes this week</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.dayStreak)}</Text>
-            <Text style={[styles.subheadingText, styles.whiteText]}>day streak</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(meditation.meditationState.dayStreak)}</Text>
+            <Text style={[styles.subheadingText, styles.lightText]}>day streak</Text>
           </View>
           <View style={styles.individualStatsContainer}>
-            <Text style={[styles.headingText, styles.whiteText]}>{numberFormatter(this.state.totalMinutes)}</Text>
-            <Text style={[styles.subheadingText, styles.whiteText]}>minutes total</Text>
+            <Text style={[styles.headingText, styles.lightText]}>{numberFormatter(meditation.meditationState.totalMinutes)}</Text>
+            <Text style={[styles.subheadingText, styles.lightText]}>minutes total</Text>
           </View>
         </View>
-      </View>
+      </ThemeAwareView>
       <View style={styles.dividers}>
-        <MeditationHighlightsDivider />
+        <MeditationHighlightsDivider isPrimary={true}/>
       </View>
       <QuotationDisplay />
         <FooterButton
           content="Meditate"
-          onPress={() => this.props.navigation.push('MeditationSelection')}
+          onPress={() => navigation.push('MeditationSelection')}
         />
-    </View>)
-  }
-
-  private async fetchData() {
-    const meditationRecords: MeditationRecords = await asyncStorageMeditationSessionRepository.getMeditationSessions();
-    const sessions = meditationRecords.meditationSessions;
-    this.setState({
-        ...this.state,
-        totalMinutes: meditationAnalysisService.getTotalMeditatedMinutes(sessions),
-        weeklyMinutes: meditationAnalysisService.getWeeklyMeditatedMinutes(sessions),
-        dayStreak: meditationAnalysisService.getDayStreakCount(sessions),
-    });
-  }
+    </ThemeAwareView>);
 }
 
 const styles = StyleSheet.create({
   meditationHighlightsContainer: {
-    backgroundColor: "#4464FF",
     flex: 1,
     paddingTop: 50,
     paddingHorizontal: 25,
     width: "100%",
+  },
+  meditationHighlighsHeaderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   meditationStatsContainer: {
     flex: 1,
@@ -115,7 +95,7 @@ const styles = StyleSheet.create({
   individualStatsContainer: {
     flex: 1,
   },
-  whiteText: {
+  lightText: {
     color: "#FFF",
   },
   headingText: {
@@ -137,4 +117,15 @@ const styles = StyleSheet.create({
   },
 })
 
-export default HomeScreen;
+const withThemeHomeScreen = compose(
+  withTheme,
+  withStatsPresenter,
+  branch((props: Props) => props.statsPresenter.isStatsHidden,
+    renderComponent(HomeScreenWithoutStats)
+  ),
+  withMeditationState,
+)(HomeScreen);
+
+withThemeHomeScreen.navigationOptions = { header: null };
+
+export default withThemeHomeScreen;

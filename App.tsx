@@ -1,49 +1,87 @@
-import React from 'react';
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-import { Text } from "react-native";
-import { HomeScreen, MeditationSelectionScreen, MeditationScreen, MeditationSuccessScreen } from "./screens";
+import React, { useEffect } from 'react';
+import { ActivityIndicator } from "react-native";
+import { handleFontScaling } from './utilities/Styles';
+import { useTheme, themeContext } from "./utilities/Styles/theme";
+import { themeColors, colorPalette } from "./utilities/Styles/themeColors";
+import {
+  NavigationContainer,
+  DarkTheme,
+  DefaultTheme,
+} from '@react-navigation/native'
+import { MainNavigator } from './components/MainNavigator';
+import { useStatsPresenter } from './utilities/useStatsPresenter';
+import { statsPresenterContext } from './utilities/useStatsPresenter';
+import { useMeditationState, meditationStateContext } from './utilities/useMeditationState';
 
-const MainNavigator = createStackNavigator(
-  {
-    Home: {
-      screen: HomeScreen
-    },
-    MeditationSelection: { 
-      screen: MeditationSelectionScreen 
-    },
-    Meditation: {
-      screen: MeditationScreen
-    },
-    MeditationSuccess: {
-      screen: MeditationSuccessScreen,
-    }
-  },
-  {
-    initialRouteName: 'Home',
-    defaultNavigationOptions: {
-      headerStyle: {
-        shadowColor: 'transparent',
-        borderBottomWidth: 0,
-        elevation: 0,
-      },
-    },
+const MyDarkTheme = {
+  dark: true,
+  colors: {
+    ...DarkTheme.colors,
+    background: colorPalette.darkBackground,
+    card: colorPalette.darkBackground,
+    primary: colorPalette.darkPrimaryColor,
   }
-);
+}
 
-const AppContainer = createAppContainer(MainNavigator);
+const MyDefaultTheme = {
+  dark: false,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: colorPalette.primaryColor,
+  }
+}
 
-class App extends React.Component {
-  public constructor(props){
-    super(props);
-    if (Text.defaultProps == null) Text.defaultProps = {};
-    Text.defaultProps.allowFontScaling = true;
-    Text.defaultProps.maxFontSizeMultiplier = 1.25;
+const App = () => {
+  useEffect(() => {
+    handleFontScaling();
+  }, []);
+
+  const {
+    themeState,
+    setThemeState,
+  } = useTheme();
+
+  const toggle = () => setThemeState({
+    ...themeState,
+    theme: {
+      type: themeState.theme.type === "light" ? "dark" : "light"
+    },
+  });
+
+  const calculatedThemeColors = themeColors(themeState.theme.type);
+
+  const { isStatsHidden, setStatsHidden } = useStatsPresenter();
+  const toggleStats = () => setStatsHidden(!isStatsHidden);
+
+  const { meditationState, updateMeditationSessions } = useMeditationState();
+
+  if (!themeState.hasThemeMounted) {
+    return <ActivityIndicator size="large" color={colorPalette.primaryColor}/>
   }
 
-  public render() {
-    return (<AppContainer />);
-  }
+  return (
+    <themeContext.Provider value={{
+      theme: themeState.theme,
+      themeColors: calculatedThemeColors,
+      toggle,
+    }}>
+      <statsPresenterContext.Provider value={{
+        isStatsHidden,
+        toggleStats,
+      }}>
+        <meditationStateContext.Provider value={{
+          meditationState,
+          updateMeditationSessions,
+        }}>
+          <NavigationContainer
+            theme={themeState.theme.type === "dark" ? MyDarkTheme : MyDefaultTheme}
+          >
+            <MainNavigator />
+          </NavigationContainer>
+        </meditationStateContext.Provider>
+      </statsPresenterContext.Provider>
+    </themeContext.Provider>
+  );
 }
 
 export default App;

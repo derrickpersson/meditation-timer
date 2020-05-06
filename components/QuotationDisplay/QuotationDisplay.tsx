@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { OpenQuotationMark, CloseQuotationMark } from "../SvgIcons";
 import { quotationService } from "../../utilities/QuotationService";
 import { FadeInView } from "../FadeInView";
+import { ThemeAwareText } from "../ThemeAwareText";
 
 export const QuotationDisplay = () => {
     const [quote, setQuote] = useState({ author: "", text: ""});
@@ -21,14 +22,14 @@ export const QuotationDisplay = () => {
                 <OpenQuotationMark />
             </View>
         </View>
-        <Text style={styles.headingText} adjustsFontSizeToFit={true}>{quote.text}</Text>
+        <ThemeAwareText style={styles.headingText} adjustsFontSizeToFit={true}>{quote.text}</ThemeAwareText>
         <View style={[styles.quotationMarkContainer, styles.closeQuotation]}>
             <View style={styles.quotationMark}>
                 <CloseQuotationMark />
             </View>
         </View>
         <View style={styles.authorTextContainer}>
-            <Text style={styles.authorText}>- {quote.author}</Text>
+            <ThemeAwareText style={styles.authorText}>- {quote.author}</ThemeAwareText>
         </View>
     </FadeInView>
 )}

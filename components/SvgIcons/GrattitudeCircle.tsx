@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, { G, Path, Circle } from 'react-native-svg';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
 const GrattitudeCircle = (props) => {
     return (
@@ -12,25 +12,25 @@ const GrattitudeCircle = (props) => {
             ]}
         >
             <Svg width="50px" height="50px" viewBox="0 0 50 50">
-                <G id="Icons-/-Circle-/-Gratitude" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <G id="Icons-/-Circle-/-Gratitude" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
                     <G id="Icons-/-Gratitude" transform="translate(13.000000, 10.000000)" stroke={props.colour || "#979797"}>
                         <G id="Gratitude">
-                            <G id="Right-hand" transform="translate(18.947368, 17.163438) scale(-1, 1) translate(-18.947368, -17.163438) translate(12.631579, 4.421502)" stroke-width="1.6194332">
+                            <G id="Right-hand" transform="translate(18.947368, 17.163438) scale(-1, 1) translate(-18.947368, -17.163438) translate(12.631579, 4.421502)" strokeWidth="1.6194332">
                                 <Path d="M11.8490486,2.43276194 L11.8292519,11.8650435 C11.9659704,15.7298548 11.75647,18.04408 11.2007507,18.8077191 C10.6597303,19.5511599 8.29469559,20.4188975 7.43111671,20.5558141 C6.46385359,20.7091694 5.43218035,20.5850537 4.566028,20.5558141 C3.58199037,20.522595 2.82431263,20.5303205 3.02486388,19.7419355 C3.22033873,18.9735063 3.14215892,17.3212316 4.05426426,13.7180873 C4.12523442,13.4377297 4.44722731,12.8200484 5.02024291,11.8650435 L10.6399534,2.10809692 C10.8185101,1.79808664 11.2145719,1.69152245 11.5245822,1.87007913 C11.7257524,1.98594718 11.8495358,2.20060979 11.8490486,2.43276194 Z" id="Triangle"></Path>
                                 <Path d="M2.72319318,20.6765081 L1.18041068,24.6741544 L7.82782153,24.6741544 L9.3404965,21.0055679 L2.72319318,20.6765081 Z" id="Rectangle"></Path>
                                 <Path d="M8.82733292,15.5550419 C9.57569937,12.9288364 10.1666935,11.3083339 10.6003154,10.6935344 C11.0339372,10.0787349 11.7110251,9.90132023 12.6315789,10.1612903" id="Path-4" stroke-linecap="round"></Path>
                             </G>
-                            <G id="Right-hand-Copy" transform="translate(0.000000, 4.421502)" stroke-width="1.6194332">
+                            <G id="Right-hand-Copy" transform="translate(0.000000, 4.421502)" strokeWidth="1.6194332">
                                 <Path d="M11.8490486,2.43276194 L11.8292519,11.8650435 C11.9659704,15.7298548 11.75647,18.04408 11.2007507,18.8077191 C10.6597303,19.5511599 8.29469559,20.4188975 7.43111671,20.5558141 C6.46385359,20.7091694 5.43218035,20.5850537 4.566028,20.5558141 C3.58199037,20.522595 2.82431263,20.5303205 3.02486388,19.7419355 C3.22033873,18.9735063 3.14215892,17.3212316 4.05426426,13.7180873 C4.12523442,13.4377297 4.44722731,12.8200484 5.02024291,11.8650435 L10.6399534,2.10809692 C10.8185101,1.79808664 11.2145719,1.69152245 11.5245822,1.87007913 C11.7257524,1.98594718 11.8495358,2.20060979 11.8490486,2.43276194 Z" id="Triangle"></Path>
                                 <Path d="M2.72319318,20.6765081 L1.18041068,24.6741544 L7.82782153,24.6741544 L9.3404965,21.0055679 L2.72319318,20.6765081 Z" id="Rectangle"></Path>
                                 <Path d="M8.82733292,15.5550419 C9.57569937,12.9288364 10.1666935,11.3083339 10.6003154,10.6935344 C11.0339372,10.0787349 11.7110251,9.90132023 12.6315789,10.1612903" id="Path-4" stroke-linecap="round"></Path>
                             </G>
-                            <Path d="M12.7015461,0 L12.7015461,2.47857583" id="Path-5" stroke-width="1.6194332" stroke-linecap="round"></Path>
-                            <Path d="M16.5207273,1.51576789 L16.5157099,3.99936108" id="Path-5-Copy" stroke-width="1.6194332" stroke-linecap="round" transform="translate(16.518219, 2.757564) rotate(-315.000000) translate(-16.518219, -2.757564) "></Path>
-                            <Path d="M8.90437391,1.51576789 L8.90939127,3.99936108" id="Path-5-Copy-2" stroke-width="1.6194332" stroke-linecap="round" transform="translate(8.906883, 2.757564) rotate(-45.000000) translate(-8.906883, -2.757564) "></Path>
+                            <Path d="M12.7015461,0 L12.7015461,2.47857583" id="Path-5" strokeWidth="1.6194332" stroke-linecap="round"></Path>
+                            <Path d="M16.5207273,1.51576789 L16.5157099,3.99936108" id="Path-5-Copy" strokeWidth="1.6194332" stroke-linecap="round" transform="translate(16.518219, 2.757564) rotate(-315.000000) translate(-16.518219, -2.757564) "></Path>
+                            <Path d="M8.90437391,1.51576789 L8.90939127,3.99936108" id="Path-5-Copy-2" strokeWidth="1.6194332" stroke-linecap="round" transform="translate(8.906883, 2.757564) rotate(-45.000000) translate(-8.906883, -2.757564) "></Path>
                         </G>
                     </G>
-                    <Circle id="Oval" stroke={props.colour || "#979797"} stroke-width="4" cx="25" cy="25" r="24"></Circle>
+                    <Circle id="Oval" stroke={props.colour || "#979797"} strokeWidth="2" cx="25" cy="25" r="24"></Circle>
                 </G>
             </Svg>
         </View>

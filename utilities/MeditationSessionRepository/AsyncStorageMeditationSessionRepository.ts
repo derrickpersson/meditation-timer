@@ -25,30 +25,28 @@ export class AsyncStorageMeditationSessionRepository implements MeditationSessio
     }
 
 
-    public createMeditationSession(meditationSessionInput: MeditationSessionInput): Promise<void>{
+    public createMeditationSession(meditationSessionInput: MeditationSessionInput): Promise<MeditationSession>{
         return new Promise((resolve, reject) => {
             AsyncStorage.getItem(meditationSessionsKey, (error, result) => {
                 let meditationSessions;
+                const newMeditationSession = {
+                    id: uuid.create(0),
+                    ...meditationSessionInput,
+                }
                 if(result){
                     const parsedResult = JSON.parse(result);
-                    parsedResult.meditationSessions.push({
-                        id: uuid.create(0),
-                        ...meditationSessionInput,
-                    });
+                    parsedResult.meditationSessions.push(newMeditationSession);
                     meditationSessions = JSON.stringify(parsedResult);
                 } else {
                     meditationSessions = JSON.stringify({
-                        meditationSessions: [{
-                            id: uuid.create(0),
-                            ...meditationSessionInput,
-                        }],
+                        meditationSessions: [newMeditationSession],
                     });
                 }
                 AsyncStorage.setItem(meditationSessionsKey, meditationSessions, (error) => {
                     if(error){
                         reject(error);
                     }
-                    resolve();
+                    resolve(newMeditationSession);
                 })
             });
         });

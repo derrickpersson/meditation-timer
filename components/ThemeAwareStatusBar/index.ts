@@ -1,0 +1,1 @@
+export { default as ThemeAwareStatusBar } from "./ThemeAwareStatusBar";
